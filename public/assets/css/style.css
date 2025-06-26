@@ -1,0 +1,372 @@
+/* public/assets/css/style.css */
+
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+.app-header {
+    background-color: #004D40; /* Verde oscuro Gtek */
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.app-header .logo {
+    display: flex;
+    align-items: center;
+}
+
+.app-header .logo img {
+    height: 40px; /* Tamaño del logo */
+    margin-right: 10px;
+}
+
+.app-header h1 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.app-header .user-info {
+    font-size: 0.9em;
+}
+
+/* Content Wrapper para layout de dos columnas (si aplica) */
+.content-wrapper {
+    display: flex;
+    flex: 1; /* Permite que el contenido ocupe el espacio restante */
+}
+
+.app-navbar {
+    background-color: #00796B; /* Verde un poco más claro */
+    color: #fff;
+    width: 200px; /* Ancho fijo para la barra lateral */
+    padding: 20px;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+}
+
+.app-navbar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.app-navbar li {
+    margin-bottom: 10px;
+}
+
+.app-navbar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.app-navbar a:hover {
+    background-color: #004D40; /* Verde oscuro al pasar el mouse */
+}
+
+.main-content {
+    flex: 1; /* Ocupa el espacio restante después de la navbar */
+    padding: 20px;
+    background-color: #fff;
+}
+
+.page-title {
+    color: #004D40;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #EEE;
+    padding-bottom: 10px;
+}
+
+/* Estilos de formulario de login */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.login-container h2 {
+    color: #004D40;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+    width: calc(100% - 20px); /* Ajusta por padding */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #00796B;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #004D40;
+}
+
+/* Estilos para la sección de filtros */
+.filters-section {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    gap: 15px; /* Espacio entre los grupos de filtros */
+    align-items: flex-end; /* Alinea los elementos al final */
+}
+
+.filter-group {
+    flex: 1; /* Permite que los grupos de filtros ocupen espacio */
+    min-width: 180px; /* Ancho mínimo para cada grupo de filtro */
+}
+
+.filter-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.filter-group input[type="date"],
+.filter-group select {
+    width: 100%;
+}
+
+.search-group {
+    display: flex;
+    align-items: center;
+    flex-grow: 2; /* Para que la búsqueda ocupe más espacio */
+    min-width: 250px;
+}
+
+.search-group input {
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.btn-search {
+    background-color: #00796B;
+    color: white;
+}
+
+.btn-search:hover {
+    background-color: #004D40;
+}
+
+.btn-clear {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-clear:hover {
+    background-color: #c0c0c0;
+}
+
+.filter-active-indicator {
+    display: flex;
+    align-items: center;
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 10px; /* Espacio con el último botón */
+}
+
+.filter-active-indicator .filter-icon {
+    width: 20px;
+    height: 20px;
+    background-color: #5cb85c; /* Color de ejemplo */
+    border-radius: 50%;
+    margin-left: 5px;
+    /* Aquí se puede añadir un icono SVG o de fuente */
+}
+
+/* Estilos de la tabla de registros */
+.records-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    color: #004D40;
+    margin-bottom: 15px;
+}
+
+.records-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.record-count {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.btn-export {
+    background-color: #00796B;
+    color: white;
+}
+
+.btn-export:hover {
+    background-color: #004D40;
+}
+
+.view-options label {
+    margin-right: 5px;
+}
+
+.bitacora-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.bitacora-table th,
+.bitacora-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.bitacora-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #555;
+}
+
+.bitacora-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.bitacora-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.tag {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.entry-tag {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Verde oscuro */
+}
+
+.exit-tag {
+    background-color: #f8d7da; /* Rojo claro */
+    color: #721c24; /* Rojo oscuro */
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.btn-icon img {
+    height: 20px; /* Tamaño del icono */
+    vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .app-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .app-header .user-info {
+        margin-top: 10px;
+    }
+    .content-wrapper {
+        flex-direction: column; /* Apila la navbar y el contenido */
+    }
+    .app-navbar {
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .app-navbar ul {
+        display: flex; /* Para poner los ítems en fila si hay espacio */
+        justify-content: space-around;
+    }
+    .app-navbar li {
+        margin-bottom: 0;
+    }
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-group, .search-group {
+        width: 100%; /* Ocupa todo el ancho */
+        min-width: unset; /* Reinicia el ancho mínimo */
+    }
+    .bitacora-table {
+        font-size: 0.9em;
+    }
+    .bitacora-table th, .bitacora-table td {
+        padding: 8px 10px;
+    }
+}
