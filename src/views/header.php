@@ -14,7 +14,21 @@
                 <h1>Gtek Logistics</h1>
             </div>
             <div class="user-info">
-                <span>Usuario: **UsuarioAutorizado1**</span> </div>
+                <?php
+                // Incluir Auth para verificar sesión
+                require_once __DIR__ . '/../core/Auth.php';
+                if (Auth::isLoggedIn()) {
+                    echo '<span>Usuario: <strong>' . Auth::getUsername() . '</strong></span>';
+                    echo '<a href="/logout.php" class="btn btn-logout">Cerrar Sesión</a>'; // Botón de logout
+                }
+                ?>
+            </div>
         </header>
         <div class="content-wrapper">
-            <main class="main-content"></main>
+            <?php 
+            // Solo incluir navbar si el usuario está logueado
+            if (Auth::isLoggedIn()) {
+                include __DIR__ . '/navbar.php'; 
+            }
+            ?>
+            <main class="main-content">
