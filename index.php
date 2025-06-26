@@ -1,8 +1,8 @@
 <?php
 // public/index.php
 
-require_once __DIR__ . '/../src/config/db.php';
-require_once __DIR__ . '/../src/core/Auth.php';
+require_once __DIR__ . '/src/config/db.php';
+require_once __DIR__ . '/src/core/Auth.php';
 
 // Iniciar sesión si aún no está iniciada (Auth::isLoggedIn() ya lo hace)
 // Auth::isLoggedIn() internamente llama a session_start() si es necesario.

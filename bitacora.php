@@ -1,8 +1,8 @@
 <?php
 // public/bitacora.php
 
-require_once __DIR__ . '/../src/core/Auth.php';
-require_once __DIR__ . '/../src/models/Bitacora.php';
+require_once __DIR__ . '/src/core/Auth.php';
+require_once __DIR__ . '/src/models/Bitacora.php';
 
 // Verificar sesión
 if (!Auth::isLoggedIn()) {
