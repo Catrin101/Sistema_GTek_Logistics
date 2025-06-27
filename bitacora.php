@@ -39,93 +39,414 @@ $totalPages = ceil($totalRegistros / $recordsPerPage);
 
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
-include __DIR__ . '/src/views/navbar.php'; 
+//include __DIR__ . '/src/views/navbar.php'; 
 ?>
-<div class="page-content">
-    <h2 class="page-title">Consulta de Bitácora</h2>
 
-    <div class="filters-section">
-        <form action="" method="GET" class="filter-form">
-            <div class="filter-group">
-                <label for="fecha_inicio">Fecha Inicio:</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo htmlspecialchars($filters['fecha_inicio'] ?? ''); ?>">
+<style>
+.logbook-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.logbook-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logbook-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.filters-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filters-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 200px;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.filter-input {
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.filter-select {
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 45px;
+}
+
+.search-container {
+    position: relative;
+    grid-column: 1 / -1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z'/%3e%3c/svg%3e");
+    background-position: 15px center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.records-count {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.table-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-export {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-export:hover {
+    background: #218838;
+}
+
+.records-per-page {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.records-select {
+    padding: 6px 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.data-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 14px;
+    color: #495057;
+}
+
+.data-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.operation-tag {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.tag-entry {
+    background: #d4edda;
+    color: #155724;
+}
+
+.tag-exit {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.btn-view {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.btn-view:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+
+.pagination-container {
+    padding: 20px 25px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover {
+    background: #e9ecef;
+    text-decoration: none;
+}
+
+.pagination-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.no-records {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.btn-clear-filters {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.btn-clear-filters:hover {
+    background: #c82333;
+    text-decoration: none;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .filters-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .table-actions {
+        justify-content: space-between;
+    }
+}
+</style>
+
+<div class="logbook-container">
+    <div class="logbook-header">
+        <h1 class="logbook-title">Merchandise Movement Logbook</h1>
+    </div>
+
+    <div class="filters-container">
+        <form action="" method="GET">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label" for="fecha_inicio">Start Date</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="filter-input" 
+                           value="<?php echo htmlspecialchars($filters['fecha_inicio'] ?? ''); ?>" 
+                           placeholder="Select start date">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label" for="fecha_fin">End Date</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin" class="filter-input" 
+                           value="<?php echo htmlspecialchars($filters['fecha_fin'] ?? ''); ?>" 
+                           placeholder="Select end date">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label" for="tipo_operacion">Operation Type</label>
+                    <select id="tipo_operacion" name="tipo_operacion" class="filter-select">
+                        <option value="" <?php echo (empty($filters['tipo_operacion']) ? 'selected' : ''); ?>>All Types</option>
+                        <option value="Entrada" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Entrada') ? 'selected' : ''); ?>>Entry</option>
+                        <option value="Salida" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Salida') ? 'selected' : ''); ?>>Exit</option>
+                    </select>
+                </div>
             </div>
-            <div class="filter-group">
-                <label for="fecha_fin">Fecha Fin:</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" value="<?php echo htmlspecialchars($filters['fecha_fin'] ?? ''); ?>">
+            
+            <div class="search-container">
+                <input type="text" id="search" name="search" class="search-input" 
+                       placeholder="Search by document, merchandise, consignee..." 
+                       value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
             </div>
-            <div class="filter-group">
-                <label for="tipo_operacion">Tipo de Operación:</label>
-                <select id="tipo_operacion" name="tipo_operacion">
-                    <option value="" <?php echo (empty($filters['tipo_operacion']) ? 'selected' : ''); ?>>Todos</option>
-                    <option value="Entrada" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Entrada') ? 'selected' : ''); ?>>Entrada</option>
-                    <option value="Salida" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Salida') ? 'selected' : ''); ?>>Salida</option>
-                </select>
-            </div>
-            <div class="filter-group search-group">
-                <input type="text" id="search" name="search" placeholder="Conocimiento, Pedimento..." value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
-                <button type="submit" class="btn btn-search">Q Buscar</button>
-                <a href="/bitacora.php" class="btn btn-clear">X</a> </div>
-            <div class="filter-active-indicator">
-                <span>Filtros activos</span> <span class="filter-icon"></span>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="btn-export">Apply Filters</button>
+                <a href="/bitacora.php" class="btn-clear-filters">Clear Filters</a>
             </div>
         </form>
     </div>
 
-    <div class="records-section">
-        <h3 class="section-title">Registros de Bitácora</h3>
-        <div class="records-header-actions">
-            <span class="record-count"><?php echo $totalRegistros; ?> registros encontrados</span>
-            <button class="btn btn-export">Exportar</button>
-            <div class="view-options">
-                <label for="records_per_page">Ver:</label>
-                <select id="records_per_page" name="records_per_page" onchange="this.form.submit()">
-                    <option value="10" <?php echo ($recordsPerPage == 10 ? 'selected' : ''); ?>>10</option>
-                    <option value="25" <?php echo ($recordsPerPage == 25 ? 'selected' : ''); ?>>25</option>
-                    <option value="50" <?php echo ($recordsPerPage == 50 ? 'selected' : ''); ?>>50</option>
-                </select>
+    <div class="table-container">
+        <div class="table-header">
+            <span class="records-count"><?php echo $totalRegistros; ?> records found</span>
+            <div class="table-actions">
+                <button class="btn-export">Export</button>
+                <div class="records-per-page">
+                    <span>Adjust Records Per Page</span>
+                    <form method="GET" style="display: inline;">
+                        <?php foreach ($_GET as $key => $value): ?>
+                            <?php if ($key !== 'records_per_page'): ?>
+                                <input type="hidden" name="<?php echo htmlspecialchars($key); ?>" value="<?php echo htmlspecialchars($value); ?>">
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        <select name="records_per_page" class="records-select" onchange="this.form.submit()">
+                            <option value="10" <?php echo ($recordsPerPage == 10 ? 'selected' : ''); ?>>10</option>
+                            <option value="25" <?php echo ($recordsPerPage == 25 ? 'selected' : ''); ?>>25</option>
+                            <option value="50" <?php echo ($recordsPerPage == 50 ? 'selected' : ''); ?>>50</option>
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
         
-        <table class="bitacora-table">
+        <table class="data-table">
             <thead>
                 <tr>
-                    <th>Fecha/Hora</th>
-                    <th>Tipo</th>
-                    <th>Documento</th>
-                    <th>Mercancía</th>
-                    <th>Consignatario</th>
-                    <th>Acciones</th>
+                    <th>Date/Time</th>
+                    <th>Type</th>
+                    <th>Document</th>
+                    <th>Merchandise</th>
+                    <th>Consignee</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($registros)): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">No se encontraron registros.</td>
+                        <td colspan="6" class="no-records">No records found</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($registros as $registro): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($registro['fecha_ingreso']))); ?></td>
-                            <td><span class="tag <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'entry-tag' : 'exit-tag'); ?>"><?php echo htmlspecialchars($registro['tipo_operacion']); ?></span></td>
+                            <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($registro['fecha_ingreso']))); ?></td>
+                            <td>
+                                <span class="operation-tag <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'tag-entry' : 'tag-exit'); ?>">
+                                    <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'Entry' : 'Exit'); ?>
+                                </span>
+                            </td>
                             <td><?php echo htmlspecialchars($registro['num_conocimiento_embarque']); ?></td>
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
-                            <td><a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-icon"><img src="/assets/img/icon_eye.svg" alt="Ver detalle"></a></td>
+                            <td>
+                                <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
         
-        <div class="pagination">
+        <?php if ($totalPages > 1): ?>
+        <div class="pagination-container">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <a href="?page=<?php echo $i; ?>&records_per_page=<?php echo $recordsPerPage; ?>&<?php echo http_build_query($filters); ?>" 
-                   class="btn <?php echo ($i == $currentPage ? 'btn-primary' : 'btn-clear'); ?>">
+                   class="pagination-btn <?php echo ($i == $currentPage ? 'active' : ''); ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
         </div>
+        <?php endif; ?>
     </div>
 </div>
+
 <?php include __DIR__ . '/src/views/footer.php'; ?>
