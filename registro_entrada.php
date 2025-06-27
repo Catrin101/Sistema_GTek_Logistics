@@ -1,10 +1,10 @@
 <?php
 // public/registro_entrada.php
 
-require_once __DIR__ . '/../src/core/Auth.php';
-require_once __DIR__ . '/../src/models/Bitacora.php';
-require_once __DIR__ . '/../src/models/Consignatario.php';
-require_once __DIR__ . '/../src/models/Remitente.php';
+require_once __DIR__ . '/src/core/Auth.php';
+require_once __DIR__ . '/src/models/Bitacora.php';
+require_once __DIR__ . '/src/models/Consignatario.php';
+require_once __DIR__ . '/src/models/Remitente.php';
 
 // Verificar sesión
 if (!Auth::isLoggedIn()) {
@@ -99,8 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include __DIR__ . '/../src/views/header.php';
-include __DIR__ . '/../src/views/navbar.php'; // Navbar para navegacion entre bitacora y registro_entrada
+include __DIR__ . '/src/views/header.php';
+include __DIR__ . '/src/views/navbar.php'; // Navbar para navegacion entre bitacora y registro_entrada
 ?>
 
 <div class="page-content">
@@ -242,4 +242,4 @@ include __DIR__ . '/../src/views/navbar.php'; // Navbar para navegacion entre bi
     </div>
 </div>
 
-<?php include __DIR__ . '/../src/views/footer.php'; ?>
+<?php include __DIR__ . '/src/views/footer.php'; ?>
