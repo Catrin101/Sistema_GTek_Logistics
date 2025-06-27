@@ -2,6 +2,8 @@
 // src/models/Bitacora.php
 
 require_once __DIR__ . '/../config/db.php'; // Asegúrate de que la ruta sea correcta
+require_once __DIR__ . '/Consignatario.php'; // Incluir si se usa aquí directamente (aunque lo haremos en el controller)
+require_once __DIR__ . '/Remitente.php';
 
 class Bitacora {
     private $pdo;
@@ -163,6 +165,71 @@ class Bitacora {
         } catch (PDOException $e) {
             error_log("Error al obtener registro por ID: " . $e->getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Inserta un nuevo registro de bitácora.
+     * @param array $data Datos del registro.
+     * @return int|false El ID del nuevo registro o false si falla.
+     */
+    public function createRegistro(array $data) {
+        $sql = "INSERT INTO bitacora_registros (
+                    fecha_ingreso, 
+                    tipo_operacion, 
+                    num_conocimiento_embarque, 
+                    num_registro_buque_vuelo_contenedor, 
+                    dimension_tipo_sellos_candados, 
+                    primer_puerto_terminal, 
+                    descripcion_mercancia, 
+                    peso_unidad_medida, 
+                    num_bultos, 
+                    valor_comercial, 
+                    fecha_conclusion_descarga, 
+                    consignatario_id, 
+                    remitente_id, 
+                    registrado_por_user_id
+                ) VALUES (
+                    :fecha_ingreso, 
+                    :tipo_operacion, 
+                    :num_conocimiento_embarque, 
+                    :num_registro_buque_vuelo_contenedor, 
+                    :dimension_tipo_sellos_candados, 
+                    :primer_puerto_terminal, 
+                    :descripcion_mercancia, 
+                    :peso_unidad_medida, 
+                    :num_bultos, 
+                    :valor_comercial, 
+                    :fecha_conclusion_descarga, 
+                    :consignatario_id, 
+                    :remitente_id, 
+                    :registrado_por_user_id
+                )";
+        
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            
+            // Asigna los valores a los parámetros
+            $stmt->bindParam(':fecha_ingreso', $data['fecha_ingreso']);
+            $stmt->bindParam(':tipo_operacion', $data['tipo_operacion']);
+            $stmt->bindParam(':num_conocimiento_embarque', $data['num_conocimiento_embarque']);
+            $stmt->bindParam(':num_registro_buque_vuelo_contenedor', $data['num_registro_buque_vuelo_contenedor']);
+            $stmt->bindParam(':dimension_tipo_sellos_candados', $data['dimension_tipo_sellos_candados']);
+            $stmt->bindParam(':primer_puerto_terminal', $data['primer_puerto_terminal']);
+            $stmt->bindParam(':descripcion_mercancia', $data['descripcion_mercancia']);
+            $stmt->bindParam(':peso_unidad_medida', $data['peso_unidad_medida']);
+            $stmt->bindParam(':num_bultos', $data['num_bultos']);
+            $stmt->bindParam(':valor_comercial', $data['valor_comercial']);
+            $stmt->bindParam(':fecha_conclusion_descarga', $data['fecha_conclusion_descarga']);
+            $stmt->bindParam(':consignatario_id', $data['consignatario_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':remitente_id', $data['remitente_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':registrado_por_user_id', $data['registrado_por_user_id'], PDO::PARAM_INT);
+
+            $stmt->execute();
+            return $this->pdo->lastInsertId(); // Devuelve el ID del registro insertado
+        } catch (PDOException $e) {
+            error_log("Error al crear registro de bitácora: " . $e->getMessage());
+            return false;
         }
     }
 }
