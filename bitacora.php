@@ -38,8 +38,8 @@ $totalRegistros = $bitacoraModel->countAllRegistros($filters);
 $totalPages = ceil($totalRegistros / $recordsPerPage);
 
 // --- Incluir Vistas ---
-include __DIR__ . '/../src/views/header.php';
-include __DIR__ . '/../src/views/navbar.php'; 
+include __DIR__ . '/src/views/header.php';
+include __DIR__ . '/src/views/navbar.php'; 
 ?>
 <div class="page-content">
     <h2 class="page-title">Consulta de Bitácora</h2>
@@ -128,4 +128,4 @@ include __DIR__ . '/../src/views/navbar.php';
         </div>
     </div>
 </div>
-<?php include __DIR__ . '/../src/views/footer.php'; ?>
+<?php include __DIR__ . '/src/views/footer.php'; ?>

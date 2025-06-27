@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = "Login - Gtek Logistics";
-include __DIR__ . '/../src/views/header.php';
+include __DIR__ . '/src/views/header.php';
 ?>
 <div class="login-container">
     <h2>Inicio de Sesión</h2>
@@ -49,4 +49,4 @@ include __DIR__ . '/../src/views/header.php';
         <button type="submit" class="btn btn-primary">Ingresar</button>
     </form>
 </div>
-<?php include __DIR__ . '/../src/views/footer.php'; ?>
+<?php include __DIR__ . '/src/views/footer.php'; ?>
