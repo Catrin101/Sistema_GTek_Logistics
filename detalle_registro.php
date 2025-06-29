@@ -532,7 +532,8 @@ body {
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Usuario del Sistema</div>
-                        <div class="detail-value"><?php echo htmlspecialchars($registro['registrado_por_email_usuario'] ?? 'N/A'); ?></div> </div>
+                        <div class="detail-value">mgonzalez_capitalista</div>
+                    </div>
                     <div class="detail-item">
                         <div class="detail-label">Última Modificación</div>
                         <div class="detail-value"><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($registro['fecha_ingreso']))); ?></div>
