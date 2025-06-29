@@ -1,8 +1,8 @@
 <?php
-// public/registro_vehiculo.php
+// public/registro_visitante.php
 
 require_once __DIR__ . '/src/core/Auth.php';
-require_once __DIR__ . '/src/models/Vehiculo.php';
+require_once __DIR__ . '/src/models/Visitante.php';
 
 // Verificar sesión
 if (!Auth::isLoggedIn()) {
@@ -10,49 +10,40 @@ if (!Auth::isLoggedIn()) {
     exit;
 }
 
-$pageTitle = "Registrar Nuevo Vehículo - Gtek Logistics";
+$pageTitle = "Registrar Nuevo Visitante - Gtek Logistics";
 
 // Variables para almacenar los valores del formulario (si hay errores)
 $formData = $_POST; // Guardamos todos los datos del POST para repoblado
 $errors = [];
 $successMessage = '';
 
-$vehiculoModel = new Vehiculo();
+$visitanteModel = new Visitante();
 
-// Procesar el formulario si se envió
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // --- Validaciones ---
-    if (empty($formData['nombre_conductor'])) $errors[] = "El nombre del conductor es obligatorio.";
-    if (empty($formData['placas'])) $errors[] = "Las placas son obligatorias.";
-    
-    // Validar formato de placas (opcional, puedes ajustar según tus necesidades)
-    if (!empty($formData['placas']) && !preg_match('/^[A-Z0-9-]+$/', strtoupper($formData['placas']))) {
-        $errors[] = "Las placas deben contener solo letras, números y guiones.";
+    // Validaciones
+    if (empty($formData['nombre'])) {
+        $errors[] = "El nombre del visitante es obligatorio.";
     }
 
     // Si no hay errores de validación, proceder a guardar
     if (empty($errors)) {
         try {
             $data = [
-                'nombre_conductor' => trim($formData['nombre_conductor']),
-                'placas' => trim(strtoupper($formData['placas'])), // Convertir placas a mayúsculas
-                'empresa' => !empty(trim($formData['empresa'])) ? trim($formData['empresa']) : null,
-                'modelo' => !empty(trim($formData['modelo'])) ? trim($formData['modelo']) : null,
-                'usuario_del_sistema_id' => Auth::getUserId(), // Obtener el ID del usuario logueado
+                'nombre' => trim($formData['nombre']),
+                'numero_verificacion' => !empty($formData['numero_verificacion']) ? trim($formData['numero_verificacion']) : null,
             ];
 
-            $vehiculo_id = $vehiculoModel->createVehiculo($data);
+            $visitante_id = $visitanteModel->createVisitante($data);
 
-            if ($vehiculo_id) {
-                $successMessage = "Vehículo registrado exitosamente con ID: " . $vehiculo_id;
+            if ($visitante_id) {
+                $successMessage = "Visitante registrado exitosamente con ID: " . $visitante_id;
                 // Limpiar el formulario después de un éxito para un nuevo registro
-                $formData = []; 
+                $formData = [];
             } else {
-                $errors[] = "Error al registrar el vehículo. Por favor, intente de nuevo.";
+                $errors[] = "Error al registrar el visitante. Por favor, intente de nuevo.";
             }
-
         } catch (Exception $e) {
-            error_log("Error al procesar registro de vehículo: " . $e->getMessage());
+            error_log("Error al procesar registro de visitante: " . $e->getMessage());
             $errors[] = "Error interno del servidor. Por favor, inténtelo más tarde.";
         }
     }
@@ -167,21 +158,6 @@ label[for] + textarea[required]::before {
 .form-group textarea::placeholder {
     color: #a0a5aa;
     font-style: italic;
-}
-
-.read-only-field {
-    padding: 12px 16px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 14px;
-    background: #f8f9fa;
-    color: #6c757d;
-    font-style: italic;
-}
-
-.required {
-    color: #dc3545;
-    font-weight: bold;
 }
 
 .form-actions {
@@ -389,8 +365,8 @@ body {
 
 <div class="page-content">
     <div class="form-container">
-        <h2>Registrar Nuevo Vehículo</h2>
-        <p class="normativa">Sistema de Gestión Logística - Campos requeridos</p>
+        <h2>Registrar Nuevo Visitante</h2>
+        <p class="normativa">Sistema de Control de Visitantes</p>
 
         <?php if (!empty($successMessage)): ?>
             <div class="alert alert-success"><?php echo htmlspecialchars($successMessage); ?></div>
@@ -407,51 +383,25 @@ body {
         <?php endif; ?>
 
         <form action="" method="POST" class="register-form">
-            <h3 class="section-heading">Información del Vehículo</h3>
+            <h3 class="section-heading">Información del Visitante</h3>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="nombre_conductor">Nombre del Conductor *</label>
-                    <input type="text" id="nombre_conductor" name="nombre_conductor" 
-                           placeholder="Nombre completo del conductor"
-                           value="<?php echo htmlspecialchars($formData['nombre_conductor'] ?? ''); ?>" required>
+                    <label for="nombre">Nombre del Visitante *</label>
+                    <input type="text" id="nombre" name="nombre" 
+                           placeholder="Ingrese el nombre completo del visitante"
+                           value="<?php echo htmlspecialchars($formData['nombre'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
-                    <label for="placas">Placas del Vehículo *</label>
-                    <input type="text" id="placas" name="placas" 
-                           placeholder="EJ: ABC-123-XYZ"
-                           value="<?php echo htmlspecialchars($formData['placas'] ?? ''); ?>" 
-                           style="text-transform: uppercase;" required>
-                </div>
-                <div class="form-group">
-                    <label for="empresa">Empresa</label>
-                    <input type="text" id="empresa" name="empresa" 
-                           placeholder="Nombre de la empresa transportista"
-                           value="<?php echo htmlspecialchars($formData['empresa'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="modelo">Modelo del Vehículo</label>
-                    <input type="text" id="modelo" name="modelo" 
-                           placeholder="EJ: Freightliner Cascadia 2020"
-                           value="<?php echo htmlspecialchars($formData['modelo'] ?? ''); ?>">
-                </div>
-            </div>
-
-            <h3 class="section-heading">Información del Registro</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Registrado por</label>
-                    <span class="read-only-field"><?php echo htmlspecialchars(Auth::getUsername()); ?></span>
-                    <input type="hidden" name="usuario_del_sistema_id" value="<?php echo htmlspecialchars(Auth::getUserId()); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Fecha de Registro</label>
-                    <span class="read-only-field"><?php echo date('d/m/Y H:i'); ?></span>
+                    <label for="numero_verificacion">Número de Verificación</label>
+                    <input type="text" id="numero_verificacion" name="numero_verificacion" 
+                           placeholder="Número de identificación (opcional)"
+                           value="<?php echo htmlspecialchars($formData['numero_verificacion'] ?? ''); ?>">
                 </div>
             </div>
 
             <div class="form-actions">
-                <a href="/vehiculos.php" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Registrar Vehículo</button>
+                <a href="/visitantes.php" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Registrar Visitante</button>
             </div>
         </form>
     </div>

@@ -1,8 +1,8 @@
 <?php
-// public/vehiculos.php
+// public/visitantes.php
 
 require_once __DIR__ . '/src/core/Auth.php';
-require_once __DIR__ . '/src/models/Vehiculo.php';
+require_once __DIR__ . '/src/models/Visitante.php';
 
 // Verificar sesión
 if (!Auth::isLoggedIn()) {
@@ -10,9 +10,9 @@ if (!Auth::isLoggedIn()) {
     exit;
 }
 
-$pageTitle = "Consulta de Vehículos - Gtek Logistics";
+$pageTitle = "Consulta de Visitantes - Gtek Logistics";
 
-$vehiculoModel = new Vehiculo();
+$visitanteModel = new Visitante();
 
 // --- Lógica de Paginación y Filtros ---
 $recordsPerPage = isset($_GET['records_per_page']) ? (int)$_GET['records_per_page'] : 10;
@@ -25,18 +25,18 @@ if (!empty($_GET['search'])) {
 }
 
 // Obtener el total de registros para la paginación
-$totalRecords = $vehiculoModel->countAllVehiculos($filters);
+$totalRecords = $visitanteModel->countAllVisitantes($filters);
 $totalPages = ceil($totalRecords / $recordsPerPage);
 
-// Obtener los registros de vehículos
-$vehiculos = $vehiculoModel->getAllVehiculos($filters, $recordsPerPage, $offset);
+// Obtener los registros de visitantes
+$visitantes = $visitanteModel->getAllVisitantes($filters, $recordsPerPage, $offset);
 
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
 
 <style>
-.vehicles-container {
+.logbook-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -44,12 +44,12 @@ include __DIR__ . '/src/views/header.php';
     min-height: 100vh;
 }
 
-.vehicles-header {
+.logbook-header {
     text-align: center;
     margin-bottom: 30px;
 }
 
-.vehicles-title {
+.logbook-title {
     font-size: 28px;
     font-weight: 600;
     color: #2c3e50;
@@ -84,49 +84,6 @@ include __DIR__ . '/src/views/header.php';
 .search-input:focus {
     outline: none;
     border-color: #007bff;
-}
-
-.filter-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-search {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.2s;
-}
-
-.btn-search:hover {
-    background: #0056b3;
-    text-decoration: none;
-    color: white;
-}
-
-.btn-clear-filters {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.2s;
-}
-
-.btn-clear-filters:hover {
-    background: #c82333;
-    text-decoration: none;
-    color: white;
 }
 
 .table-container {
@@ -164,10 +121,52 @@ include __DIR__ . '/src/views/header.php';
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.2s;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-export:hover {
     background: #218838;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-search {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-search:hover {
+    background: #0056b3;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-clear-filters {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.btn-clear-filters:hover {
+    background: #c82333;
+    text-decoration: none;
+    color: white;
 }
 
 .records-per-page {
@@ -257,37 +256,32 @@ include __DIR__ . '/src/views/header.php';
     .table-actions {
         justify-content: space-between;
     }
-    
-    .filter-actions {
-        flex-direction: column;
-        gap: 10px;
-    }
 }
 </style>
 
-<div class="vehicles-container">
-    <div class="vehicles-header">
-        <h1 class="vehicles-title">Vehicle Registry</h1>
+<div class="logbook-container">
+    <div class="logbook-header">
+        <h1 class="logbook-title">Visitor Management System</h1>
     </div>
 
     <div class="filters-container">
         <form action="" method="GET">
             <div class="search-container">
                 <input type="text" id="search" name="search" class="search-input" 
-                       placeholder="Search by driver, license plates, company..." 
+                       placeholder="Search by name, verification number..." 
                        value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
             </div>
             
-            <div class="filter-actions">
+            <div style="display: flex; gap: 10px;">
                 <button type="submit" class="btn-search">Search</button>
-                <a href="/vehiculos.php" class="btn-clear-filters">Clear Filters</a>
+                <a href="/visitantes.php" class="btn-clear-filters">Clear Filters</a>
             </div>
         </form>
     </div>
 
     <div class="table-container">
         <div class="table-header">
-            <span class="records-count"><?php echo $totalRecords; ?> vehicles found</span>
+            <span class="records-count"><?php echo $totalRecords; ?> visitors found</span>
             <div class="table-actions">
                 <button class="btn-export">Export</button>
                 <div class="records-per-page">
@@ -313,29 +307,23 @@ include __DIR__ . '/src/views/header.php';
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Driver</th>
-                    <th>License Plates</th>
-                    <th>Company</th>
-                    <th>Model</th>
-                    <th>Registered by</th>
+                    <th>Name</th>
+                    <th>Verification Number</th>
                     <th>Registration Date</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($vehiculos)): ?>
+                <?php if (empty($visitantes)): ?>
                     <tr>
-                        <td colspan="7" class="no-records">No vehicles found matching the search criteria</td>
+                        <td colspan="4" class="no-records">No visitors found</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($vehiculos as $vehiculo): ?>
+                    <?php foreach ($visitantes as $visitante): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($vehiculo['id']); ?></td>
-                            <td><?php echo htmlspecialchars($vehiculo['nombre_conductor']); ?></td>
-                            <td><?php echo htmlspecialchars($vehiculo['placas']); ?></td>
-                            <td><?php echo htmlspecialchars($vehiculo['empresa'] ?? 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($vehiculo['modelo'] ?? 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($vehiculo['usuario_del_sistema_username'] ?? 'Unknown User'); ?></td>
-                            <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
+                            <td><?php echo htmlspecialchars($visitante['id']); ?></td>
+                            <td><?php echo htmlspecialchars($visitante['nombre']); ?></td>
+                            <td><?php echo htmlspecialchars($visitante['numero_verificacion'] ?? 'N/A'); ?></td>
+                            <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
