@@ -39,7 +39,6 @@ $totalPages = ceil($totalRegistros / $recordsPerPage);
 
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
-include __DIR__ . '/src/views/navbar.php'; 
 ?>
 <div class="page-content">
     <h2 class="page-title">Consulta de Bitácora</h2>
