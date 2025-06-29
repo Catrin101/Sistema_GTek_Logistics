@@ -141,21 +141,23 @@ class Bitacora {
      * @param int $id El ID del registro.
      * @return array|null El registro o null si no se encuentra.
      */
-    public function getRegistroById($id) {
+    public function getRegistroById(int $id) {
         $sql = "SELECT 
                     br.*, 
                     c.nombre AS consignatario_nombre, c.domicilio AS consignatario_domicilio, c.rfc AS consignatario_rfc, c.email AS consignatario_email, c.telefono AS consignatario_telefono,
                     r.nombre AS remitente_nombre, r.domicilio AS remitente_domicilio, r.pais_origen AS remitente_pais_origen,
-                    u.username AS registrado_por_username
+                    u.username AS registrado_por_username,
+                    u.email AS registrado_por_email_usuario -- AGREGADO: Obtener el email del usuario
                 FROM 
                     bitacora_registros br
-                LEFT JOIN 
+                JOIN 
                     consignatarios c ON br.consignatario_id = c.id
-                LEFT JOIN 
+                JOIN 
                     remitentes r ON br.remitente_id = r.id
-                LEFT JOIN
+                JOIN
                     users u ON br.registrado_por_user_id = u.id
-                WHERE br.id = :id";
+                WHERE 
+                    br.id = :id";
         
         try {
             $stmt = $this->pdo->prepare($sql);
@@ -164,7 +166,7 @@ class Bitacora {
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error al obtener registro por ID: " . $e->getMessage());
-            return null;
+            return false;
         }
     }
 
