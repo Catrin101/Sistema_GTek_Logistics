@@ -21,6 +21,13 @@
                     <a href="/registro_vehiculo.php">Registrar Vehículo</a>
                 </div>
             </li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">Visitantes</a>
+                <div class="dropdown-content">
+                    <a href="/visitantes.php">Consulta de Visitantes</a>
+                    <a href="/registro_visitante.php">Registrar Visitante</a>
+                </div>
+            </li>
         </ul>
     </nav>
 </div>
