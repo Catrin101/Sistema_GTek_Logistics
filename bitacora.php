@@ -40,91 +40,125 @@ $totalPages = ceil($totalRegistros / $recordsPerPage);
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
-<div class="page-content">
-    <h2 class="page-title">Consulta de Bitácora</h2>
 
-    <div class="filters-section">
-        <form action="" method="GET" class="filter-form">
-            <div class="filter-group">
-                <label for="fecha_inicio">Fecha Inicio:</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo htmlspecialchars($filters['fecha_inicio'] ?? ''); ?>">
+<link rel="stylesheet" href="/assets/css/estilo_interfaces.css">
+
+<div class="logbook-container">
+    <div class="logbook-header">
+        <h1 class="logbook-title">Merchandise Movement Logbook</h1>
+    </div>
+
+    <div class="filters-container">
+        <form action="" method="GET">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label" for="fecha_inicio">Start Date</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="filter-input" 
+                           value="<?php echo htmlspecialchars($filters['fecha_inicio'] ?? ''); ?>" 
+                           placeholder="Select start date">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label" for="fecha_fin">End Date</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin" class="filter-input" 
+                           value="<?php echo htmlspecialchars($filters['fecha_fin'] ?? ''); ?>" 
+                           placeholder="Select end date">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label" for="tipo_operacion">Operation Type</label>
+                    <select id="tipo_operacion" name="tipo_operacion" class="filter-select">
+                        <option value="" <?php echo (empty($filters['tipo_operacion']) ? 'selected' : ''); ?>>All Types</option>
+                        <option value="Entrada" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Entrada') ? 'selected' : ''); ?>>Entry</option>
+                        <option value="Salida" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Salida') ? 'selected' : ''); ?>>Exit</option>
+                    </select>
+                </div>
             </div>
-            <div class="filter-group">
-                <label for="fecha_fin">Fecha Fin:</label>
-                <input type="date" id="fecha_fin" name="fecha_fin" value="<?php echo htmlspecialchars($filters['fecha_fin'] ?? ''); ?>">
+            
+            <div class="search-container">
+                <input type="text" id="search" name="search" class="search-input" 
+                       placeholder="Search by document, merchandise, consignee..." 
+                       value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
             </div>
-            <div class="filter-group">
-                <label for="tipo_operacion">Tipo de Operación:</label>
-                <select id="tipo_operacion" name="tipo_operacion">
-                    <option value="" <?php echo (empty($filters['tipo_operacion']) ? 'selected' : ''); ?>>Todos</option>
-                    <option value="Entrada" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Entrada') ? 'selected' : ''); ?>>Entrada</option>
-                    <option value="Salida" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Salida') ? 'selected' : ''); ?>>Salida</option>
-                </select>
-            </div>
-            <div class="filter-group search-group">
-                <input type="text" id="search" name="search" placeholder="Conocimiento, Pedimento..." value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
-                <button type="submit" class="btn btn-search">Q Buscar</button>
-                <a href="/bitacora.php" class="btn btn-clear">X</a> </div>
-            <div class="filter-active-indicator">
-                <span>Filtros activos</span> <span class="filter-icon"></span>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="btn-export">Apply Filters</button>
+                <a href="/bitacora.php" class="btn-clear-filters">Clear Filters</a>
             </div>
         </form>
     </div>
 
-    <div class="records-section">
-        <h3 class="section-title">Registros de Bitácora</h3>
-        <div class="records-header-actions">
-            <span class="record-count"><?php echo $totalRegistros; ?> registros encontrados</span>
-            <button class="btn btn-export">Exportar</button>
-            <div class="view-options">
-                <label for="records_per_page">Ver:</label>
-                <select id="records_per_page" name="records_per_page" onchange="this.form.submit()">
-                    <option value="10" <?php echo ($recordsPerPage == 10 ? 'selected' : ''); ?>>10</option>
-                    <option value="25" <?php echo ($recordsPerPage == 25 ? 'selected' : ''); ?>>25</option>
-                    <option value="50" <?php echo ($recordsPerPage == 50 ? 'selected' : ''); ?>>50</option>
-                </select>
+    <div class="table-container">
+        <div class="table-header">
+            <span class="records-count"><?php echo $totalRegistros; ?> records found</span>
+            <div class="table-actions">
+                <button class="btn-export">Export</button>
+                <div class="records-per-page">
+                    <span>Adjust Records Per Page</span>
+                    <form method="GET" style="display: inline;">
+                        <?php foreach ($_GET as $key => $value): ?>
+                            <?php if ($key !== 'records_per_page'): ?>
+                                <input type="hidden" name="<?php echo htmlspecialchars($key); ?>" value="<?php echo htmlspecialchars($value); ?>">
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        <select name="records_per_page" class="records-select" onchange="this.form.submit()">
+                            <option value="10" <?php echo ($recordsPerPage == 10 ? 'selected' : ''); ?>>10</option>
+                            <option value="25" <?php echo ($recordsPerPage == 25 ? 'selected' : ''); ?>>25</option>
+                            <option value="50" <?php echo ($recordsPerPage == 50 ? 'selected' : ''); ?>>50</option>
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
         
-        <table class="bitacora-table">
+        <table class="data-table">
             <thead>
                 <tr>
-                    <th>Fecha/Hora</th>
-                    <th>Tipo</th>
-                    <th>Documento</th>
-                    <th>Mercancía</th>
-                    <th>Consignatario</th>
-                    <th>Acciones</th>
+                    <th>Date/Time</th>
+                    <th>Type</th>
+                    <th>Document</th>
+                    <th>Merchandise</th>
+                    <th>Consignee</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($registros)): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">No se encontraron registros.</td>
+                        <td colspan="6" class="no-records">No records found</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($registros as $registro): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($registro['fecha_ingreso']))); ?></td>
-                            <td><span class="tag <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'entry-tag' : 'exit-tag'); ?>"><?php echo htmlspecialchars($registro['tipo_operacion']); ?></span></td>
+                            <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($registro['fecha_ingreso']))); ?></td>
+                            <td>
+                                <span class="operation-tag <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'tag-entry' : 'tag-exit'); ?>">
+                                    <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'Entry' : 'Exit'); ?>
+                                </span>
+                            </td>
                             <td><?php echo htmlspecialchars($registro['num_conocimiento_embarque']); ?></td>
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
-                            <td><a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-icon"><img src="/assets/img/icon_eye.svg" alt="Ver detalle"></a></td>
+                            <td>
+                                <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
         
-        <div class="pagination">
+        <?php if ($totalPages > 1): ?>
+        <div class="pagination-container">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <a href="?page=<?php echo $i; ?>&records_per_page=<?php echo $recordsPerPage; ?>&<?php echo http_build_query($filters); ?>" 
-                   class="btn <?php echo ($i == $currentPage ? 'btn-primary' : 'btn-clear'); ?>">
+                   class="pagination-btn <?php echo ($i == $currentPage ? 'active' : ''); ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
         </div>
+        <?php endif; ?>
     </div>
 </div>
+
 <?php include __DIR__ . '/src/views/footer.php'; ?>
