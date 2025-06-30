@@ -414,6 +414,14 @@ body {
                         <div class="detail-value large"><?php echo htmlspecialchars($registro['num_conocimiento_embarque']); ?></div>
                     </div>
                     <div class="detail-item">
+                        <div class="detail-label">Número de Pedimento</div>
+                        <div class="detail-value"><?php echo htmlspecialchars($registro['numero_pedimento'] ?? 'N/A'); ?></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Fracción Arancelaria</div>
+                        <div class="detail-value"><?php echo htmlspecialchars($registro['fraccion_arancelaria'] ?? 'N/A'); ?></div>
+                    </div>
+                    <div class="detail-item">
                         <div class="detail-label">Sellos/Candados</div>
                         <div class="detail-value"><?php echo htmlspecialchars($registro['dimension_tipo_sellos_candados'] ?? 'SEAL-789456, LOCK-123789'); ?></div>
                     </div>

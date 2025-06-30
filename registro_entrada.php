@@ -31,7 +31,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($formData['peso_unidad_medida']) || !is_numeric($formData['peso_unidad_medida'])) $errors[] = "El Peso y Unidad de Medida es obligatorio y debe ser un número.";
     if (!isset($formData['num_bultos']) || !is_numeric($formData['num_bultos']) || $formData['num_bultos'] < 0) $errors[] = "El Número de Bultos es obligatorio y debe ser un número entero positivo.";
     if (!isset($formData['valor_comercial']) || !is_numeric($formData['valor_comercial']) || $formData['valor_comercial'] < 0) $errors[] = "El Valor Comercial es obligatorio y debe ser un número positivo.";
+    // Validación para numero_pedimento (int)
+    if (!empty($formData['numero_pedimento']) && !filter_var($formData['numero_pedimento'], FILTER_VALIDATE_INT)) {
+        $errors[] = "El Número de Pedimento debe ser un número entero válido.";
+    }
 
+    // Validación para fraccion_arancelaria (decimal)
+    // Usamos filter_var con FILTER_VALIDATE_FLOAT para decimales
+    if (!empty($formData['fraccion_arancelaria']) && !filter_var($formData['fraccion_arancelaria'], FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_FRACTION)) {
+        $errors[] = "La Fracción Arancelaria debe ser un número decimal válido.";
+    }
     // Consignatario
     if (empty($formData['consignatario_nombre'])) $errors[] = "El Nombre del Consignatario es obligatorio.";
     if (empty($formData['consignatario_domicilio'])) $errors[] = "El Domicilio del Consignatario es obligatorio.";
@@ -80,6 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'consignatario_id' => $consignatario_id,
                 'remitente_id' => $remitente_id,
                 'registrado_por_user_id' => Auth::getUserId(), // Obtener el ID del usuario logueado
+                'numero_pedimento' => $formData['numero_pedimento'] ?? null, /* Nuevo campo */
+                'fraccion_arancelaria' => $formData['fraccion_arancelaria'] ?? null, /* Nuevo campo */
             ];
 
             $newRecordId = $bitacoraModel->createRegistro($registroData);
@@ -445,6 +456,18 @@ body {
                     <input type="text" id="num_conocimiento_embarque" name="num_conocimiento_embarque" 
                            placeholder="EJ: BL123456789" 
                            value="<?php echo htmlspecialchars($formData['num_conocimiento_embarque'] ?? ''); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="numero_pedimento">Número de Pedimento</label>
+                    <input type="number" id="numero_pedimento" name="numero_pedimento"
+                        value="<?php echo htmlspecialchars($formData['numero_pedimento'] ?? ''); ?>"
+                        placeholder="Ingrese el número de pedimento">
+                </div>
+                <div class="form-group">
+                    <label for="fraccion_arancelaria">Fracción Arancelaria</label>
+                    <input type="number" id="fraccion_arancelaria" name="fraccion_arancelaria" step="0.0001"
+                        value="<?php echo htmlspecialchars($formData['fraccion_arancelaria'] ?? ''); ?>"
+                        placeholder="Ej. 9802.00.00.00">
                 </div>
                 <div class="form-group">
                     <label for="num_registro_buque_vuelo_contenedor">Número de Registro (Buque/Vuelo/Contenedor) *</label>

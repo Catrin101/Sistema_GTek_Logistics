@@ -28,6 +28,8 @@ class Bitacora {
                     br.fecha_ingreso, 
                     br.tipo_operacion, 
                     br.num_conocimiento_embarque,
+                    br.numero_pedimento, /* Campo nuevo */
+                    br.fraccion_arancelaria, /* Campo nuevo */
                     br.descripcion_mercancia,
                     br.peso_unidad_medida,
                     br.num_bultos,
@@ -190,7 +192,9 @@ class Bitacora {
                     fecha_conclusion_descarga, 
                     consignatario_id, 
                     remitente_id, 
-                    registrado_por_user_id
+                    registrado_por_user_id,
+                    numero_pedimento, /* Campo nuevo */
+                    fraccion_arancelaria /* Campo nuevo */
                 ) VALUES (
                     :fecha_ingreso, 
                     :tipo_operacion, 
@@ -205,7 +209,9 @@ class Bitacora {
                     :fecha_conclusion_descarga, 
                     :consignatario_id, 
                     :remitente_id, 
-                    :registrado_por_user_id
+                    :registrado_por_user_id,
+                    :numero_pedimento, /* Parametro nuevo */
+                    :fraccion_arancelaria /* Parametro nuevo */
                 )";
         
         try {
