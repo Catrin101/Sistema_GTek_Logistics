@@ -37,6 +37,20 @@ $registros = $bitacoraModel->getAllRegistros($filters, $recordsPerPage, $offset)
 $totalRegistros = $bitacoraModel->countAllRegistros($filters);
 $totalPages = ceil($totalRegistros / $recordsPerPage);
 
+// Obtener el total de registros para la paginación
+$totalRecords = $bitacoraModel->countAllRegistros($filters);
+$totalPages = ceil($totalRecords / $recordsPerPage);
+
+// Obtener los registros de bitácora
+$registros = $bitacoraModel->getAllRegistros($filters, $recordsPerPage, $offset);
+
+// Mensajes de estado (éxito/error) desde redirecciones
+$status_message = '';
+if (isset($_GET['status']) && isset($_GET['message'])) {
+    $status_type = $_GET['status'];
+    $status_message = htmlspecialchars(urldecode($_GET['message']));
+}
+
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
@@ -141,6 +155,12 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
                             <td>
                                 <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
+                                <a href="/eliminar_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>"
+                                   class="btn-icon"
+                                   title="Eliminar Registro"
+                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este registro de bitácora (ID: <?php echo htmlspecialchars($registro['id']); ?>)? Esta acción no se puede deshacer.');">
+                                    <img src="/assets/img/icon_delete.svg" alt="Eliminar">
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

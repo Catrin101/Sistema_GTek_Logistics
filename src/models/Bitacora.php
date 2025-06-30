@@ -234,5 +234,22 @@ class Bitacora {
             return false;
         }
     }
+
+    /**
+     * Elimina un registro de bitácora por su ID.
+     * @param int $id El ID del registro a eliminar.
+     * @return bool True si la eliminación fue exitosa, false de lo contrario.
+     */
+    public function deleteRegistro(int $id): bool {
+        $sql = "DELETE FROM bitacora_registros WHERE id = :id";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al eliminar registro de bitácora: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
