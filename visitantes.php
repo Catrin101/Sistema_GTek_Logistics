@@ -38,6 +38,9 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
     $status_message = htmlspecialchars(urldecode($_GET['message']));
 }
 
+// Determinar si el usuario actual es 'admin'
+$isAdmin = (Auth::getUserRole() === 'admin');
+
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
@@ -338,7 +341,10 @@ include __DIR__ . '/src/views/header.php';
                     <th>Name</th>
                     <th>Verification Number</th>
                     <th>Registration Date</th>
+                    <th>Imagen</th>
+                    <?php if ($isAdmin): // Mostrar columna de acciones solo si es admin ?>
                     <th>Acciones</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -354,6 +360,9 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($visitante['numero_verificacion'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
                             <td>
+                                Imagen no encontrada
+                            <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
+                            <td>
                                 <a href="/eliminar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>"
                                    class="btn-delete"
                                    title="Eliminar Visitante"
@@ -361,6 +370,7 @@ include __DIR__ . '/src/views/header.php';
                                     Delete
                                 </a>
                             </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

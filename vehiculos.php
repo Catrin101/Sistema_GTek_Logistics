@@ -38,6 +38,9 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
     $status_message = htmlspecialchars(urldecode($_GET['message']));
 }
 
+// Determinar si el usuario actual es 'admin'
+$isAdmin = (Auth::getUserRole() === 'admin');
+
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
@@ -347,7 +350,9 @@ include __DIR__ . '/src/views/header.php';
                     <th>Model</th>
                     <th>Registered by</th>
                     <th>Registration Date</th>
-                    <th>Acciones</th> </tr>
+                    <?php if ($isAdmin): // Mostrar columna de acciones solo si es admin ?>
+                    <th>Acciones</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -365,6 +370,7 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($vehiculo['modelo'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($vehiculo['usuario_del_sistema_username'] ?? 'Unknown User'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
+                            <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
                             <td>
                                 <a href="/eliminar_vehiculo.php?id=<?php echo htmlspecialchars($vehiculo['id']); ?>"
                                    class="btn-delete"
@@ -373,6 +379,7 @@ include __DIR__ . '/src/views/header.php';
                                     Delete
                                 </a>
                             </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

@@ -51,6 +51,9 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
     $status_message = htmlspecialchars(urldecode($_GET['message']));
 }
 
+// Determinar si el usuario actual es 'admin'
+$isAdmin = (Auth::getUserRole() === 'admin');
+
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
@@ -470,14 +473,16 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
                             <td>
-                                <div class="actions-container">
+                                <div class="action-buttons">
                                     <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
+                                    <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
                                     <a href="/eliminar_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>"
                                     class="btn-delete"
                                     title="Eliminar Registro"
                                     onclick="return confirm('¿Estás seguro de que quieres eliminar este registro de bitácora (ID: <?php echo htmlspecialchars($registro['id']); ?>)? Esta acción no se puede deshacer.');">
                                         Delete
                                     </a>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
