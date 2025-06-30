@@ -215,6 +215,26 @@
     text-decoration: none;
 }
 
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+    margin-left: 5px; /* Pequeño espacio entre botones */
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    color: white;
+    text-decoration: none;
+}
+
 .pagination-container {
     padding: 20px 25px;
     display: flex;

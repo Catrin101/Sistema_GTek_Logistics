@@ -264,6 +264,27 @@ include __DIR__ . '/src/views/header.php';
         justify-content: space-between;
     }
 }
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+    margin-left: 8px; /* Más espacio entre botones */
+    vertical-align: middle; /* Alinear verticalmente */
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    color: white;
+    text-decoration: none;
+}
 </style>
 
 <div class="logbook-container">
@@ -334,10 +355,10 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
                             <td>
                                 <a href="/eliminar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>"
-                                   class="btn-icon"
+                                   class="btn-delete"
                                    title="Eliminar Visitante"
                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este visitante (ID: <?php echo htmlspecialchars($visitante['id']); ?> - Nombre: <?php echo htmlspecialchars($visitante['nombre']); ?>)? Esta acción no se puede deshacer.');">
-                                    <img src="/assets/img/icon_delete.svg" alt="Eliminar">
+                                    Delete
                                 </a>
                             </td>
                         </tr>

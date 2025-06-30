@@ -270,6 +270,27 @@ include __DIR__ . '/src/views/header.php';
         gap: 10px;
     }
 }
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+    margin-left: 8px; /* Más espacio entre botones */
+    vertical-align: middle; /* Alinear verticalmente */
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    color: white;
+    text-decoration: none;
+}
 </style>
 
 <div class="vehicles-container">
@@ -346,10 +367,10 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
                             <td>
                                 <a href="/eliminar_vehiculo.php?id=<?php echo htmlspecialchars($vehiculo['id']); ?>"
-                                   class="btn-icon"
+                                   class="btn-delete"
                                    title="Eliminar Vehículo"
                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este vehículo (ID: <?php echo htmlspecialchars($vehiculo['id']); ?> - Placas: <?php echo htmlspecialchars($vehiculo['placas']); ?>)? Esta acción no se puede deshacer.');">
-                                    <img src="/assets/img/icon_delete.svg" alt="Eliminar">
+                                    Delete
                                 </a>
                             </td>
                         </tr>
