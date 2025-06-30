@@ -31,6 +31,13 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
 // Obtener los registros de vehículos
 $vehiculos = $vehiculoModel->getAllVehiculos($filters, $recordsPerPage, $offset);
 
+// Mensajes de estado (éxito/error) desde redirecciones
+$status_message = '';
+if (isset($_GET['status']) && isset($_GET['message'])) {
+    $status_type = $_GET['status'];
+    $status_message = htmlspecialchars(urldecode($_GET['message']));
+}
+
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
@@ -319,6 +326,7 @@ include __DIR__ . '/src/views/header.php';
                     <th>Model</th>
                     <th>Registered by</th>
                     <th>Registration Date</th>
+                    <th>Acciones</th> </tr>
                 </tr>
             </thead>
             <tbody>
@@ -336,6 +344,14 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($vehiculo['modelo'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($vehiculo['usuario_del_sistema_username'] ?? 'Unknown User'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
+                            <td>
+                                <a href="/eliminar_vehiculo.php?id=<?php echo htmlspecialchars($vehiculo['id']); ?>"
+                                   class="btn-icon"
+                                   title="Eliminar Vehículo"
+                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este vehículo (ID: <?php echo htmlspecialchars($vehiculo['id']); ?> - Placas: <?php echo htmlspecialchars($vehiculo['placas']); ?>)? Esta acción no se puede deshacer.');">
+                                    <img src="/assets/img/icon_delete.svg" alt="Eliminar">
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
