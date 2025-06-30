@@ -159,7 +159,7 @@ include __DIR__ . '/src/views/header.php';
                                    class="btn-icon"
                                    title="Eliminar Registro"
                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este registro de bitácora (ID: <?php echo htmlspecialchars($registro['id']); ?>)? Esta acción no se puede deshacer.');">
-                                    <img src="/assets/img/icon_delete.svg" alt="Eliminar">
+                                    Eliminar
                                 </a>
                             </td>
                         </tr>
