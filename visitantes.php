@@ -31,6 +31,13 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
 // Obtener los registros de visitantes
 $visitantes = $visitanteModel->getAllVisitantes($filters, $recordsPerPage, $offset);
 
+// Mensajes de estado (éxito/error) desde redirecciones
+$status_message = '';
+if (isset($_GET['status']) && isset($_GET['message'])) {
+    $status_type = $_GET['status'];
+    $status_message = htmlspecialchars(urldecode($_GET['message']));
+}
+
 // --- Incluir Vistas ---
 include __DIR__ . '/src/views/header.php';
 ?>
@@ -310,6 +317,7 @@ include __DIR__ . '/src/views/header.php';
                     <th>Name</th>
                     <th>Verification Number</th>
                     <th>Registration Date</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -324,6 +332,14 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($visitante['nombre']); ?></td>
                             <td><?php echo htmlspecialchars($visitante['numero_verificacion'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
+                            <td>
+                                <a href="/eliminar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>"
+                                   class="btn-icon"
+                                   title="Eliminar Visitante"
+                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este visitante (ID: <?php echo htmlspecialchars($visitante['id']); ?> - Nombre: <?php echo htmlspecialchars($visitante['nombre']); ?>)? Esta acción no se puede deshacer.');">
+                                    <img src="/assets/img/icon_delete.svg" alt="Eliminar">
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
