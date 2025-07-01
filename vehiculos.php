@@ -257,6 +257,26 @@ include __DIR__ . '/src/views/header.php';
     border-color: #007bff;
 }
 
+.btn-view {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+    vertical-align: middle;
+}
+
+.btn-view:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+
 .btn-delete {
     background: #dc3545;
     color: white;
@@ -278,12 +298,19 @@ include __DIR__ . '/src/views/header.php';
     text-decoration: none;
 }
 
+.actions-container {
+    display: flex;
+    gap: 8px; /* Espacio consistente entre botones */
+    align-items: center; /* Alineación vertical */
+}
+
 /* === ESTILOS PARA IMPRESIÓN === */
 @media print {
     /* Ocultar elementos que no deben aparecer en el PDF */
     .filters-container,
     .table-actions,
     .pagination-container,
+    .no-print,
     .btn-delete,
     header.app-header,
     .user-info,
@@ -474,12 +501,19 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
                             <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
                             <td class="no-print">
-                                <a href="/eliminar_vehiculo.php?id=<?php echo htmlspecialchars($vehiculo['id']); ?>"
-                                   class="btn-delete"
-                                   title="Eliminar Vehículo"
-                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este vehículo (ID: <?php echo htmlspecialchars($vehiculo['id']); ?> - Placas: <?php echo htmlspecialchars($vehiculo['placas']); ?>)? Esta acción no se puede deshacer.');">
-                                    Delete
-                                </a>
+                                <div class="actions-container">
+                                    <a href="/editar_vehiculo.php?id=<?php echo htmlspecialchars($vehiculo['id']); ?>" 
+                                    class="btn-view" 
+                                    title="Editar Vehiculo">
+                                        Edit
+                                    </a>
+                                    <a href="/eliminar_vehiculo.php?id=<?php echo htmlspecialchars($vehiculo['id']); ?>"
+                                    class="btn-delete"
+                                    title="Eliminar Vehículo"
+                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este vehículo (ID: <?php echo htmlspecialchars($vehiculo['id']); ?> - Placas: <?php echo htmlspecialchars($vehiculo['placas']); ?>)? Esta acción no se puede deshacer.');">
+                                        Delete
+                                    </a>
+                                </div>
                             </td>
                             <?php endif; ?>
                         </tr>

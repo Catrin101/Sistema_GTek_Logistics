@@ -256,6 +256,26 @@ include __DIR__ . '/src/views/header.php';
     border-color: #007bff;
 }
 
+.btn-view {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+    vertical-align: middle;
+}
+
+.btn-view:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+
 .btn-delete {
     background: #dc3545;
     color: white;
@@ -277,12 +297,19 @@ include __DIR__ . '/src/views/header.php';
     text-decoration: none;
 }
 
+.actions-container {
+    display: flex;
+    gap: 8px; /* Espacio consistente entre botones */
+    align-items: center; /* Alineación vertical */
+}
+
 /* === ESTILOS PARA IMPRESIÓN === */
 @media print {
     /* Ocultar elementos que no deben aparecer en el PDF */
     .filters-container,
     .table-actions,
     .pagination-container,
+    .no-print,
     .btn-delete,
     header.app-header,
     .user-info,
@@ -464,12 +491,19 @@ include __DIR__ . '/src/views/header.php';
                             <td class="no-print">Image not found</td>
                             <?php if ($isAdmin): ?>
                             <td class="no-print">
-                                <a href="/eliminar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>"
-                                   class="btn-delete"
-                                   title="Eliminar Visitante"
-                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este visitante (ID: <?php echo htmlspecialchars($visitante['id']); ?> - Nombre: <?php echo htmlspecialchars($visitante['nombre']); ?>)? Esta acción no se puede deshacer.');">
-                                    Delete
-                                </a>
+                                <div class="actions-container">
+                                    <a href="/editar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>" 
+                                    class="btn-view no-print" 
+                                    title="Editar Visitante">
+                                        Edit
+                                    </a>
+                                    <a href="/eliminar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>"
+                                    class="btn-delete"
+                                    title="Eliminar Visitante"
+                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este visitante (ID: <?php echo htmlspecialchars($visitante['id']); ?> - Nombre: <?php echo htmlspecialchars($visitante['nombre']); ?>)? Esta acción no se puede deshacer.');">
+                                        Delete
+                                    </a>
+                                </div>
                             </td>
                             <?php endif; ?>
                         </tr>

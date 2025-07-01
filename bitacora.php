@@ -365,6 +365,7 @@ include __DIR__ . '/src/views/header.php';
     .filters-container,
     .table-actions,
     .pagination-container,
+    .no-print,
     .btn-view,
     .btn-delete,
     .actions-container,
@@ -589,8 +590,16 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
                             <td class="no-print">
                                 <div class="actions-container">
-                                    <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
+                                    <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" 
+                                    class="btn-view">
+                                        View
+                                    </a>
                                     <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
+                                    <a href="/editar_entrada.php?id=<?php echo htmlspecialchars($registro['id']); ?>" 
+                                    class="btn-view" 
+                                    title="Editar Vehiculo">
+                                        Edit
+                                    </a>
                                     <a href="/eliminar_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>"
                                     class="btn-delete"
                                     title="Eliminar Registro"

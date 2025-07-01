@@ -241,6 +241,74 @@ class Bitacora {
         }
     }
 
+
+    /**
+     * Actualiza un registro existente de bitácora.
+     * @param array $data Datos del registro a actualizar (debe incluir 'id').
+     * @return bool True si la actualización fue exitosa, false de lo contrario.
+     */
+    public function updateRegistro(array $data): bool {
+        // Verificar que se proporcione el ID
+        if (!isset($data['id']) || !is_numeric($data['id'])) {
+            error_log("Error: ID no proporcionado o no válido para actualizar registro de bitácora");
+            return false;
+        }
+
+        $sql = "UPDATE bitacora_registros SET 
+                    fecha_ingreso = :fecha_ingreso, 
+                    num_conocimiento_embarque = :num_conocimiento_embarque, 
+                    num_registro_buque_vuelo_contenedor = :num_registro_buque_vuelo_contenedor, 
+                    dimension_tipo_sellos_candados = :dimension_tipo_sellos_candados, 
+                    primer_puerto_terminal = :primer_puerto_terminal, 
+                    descripcion_mercancia = :descripcion_mercancia, 
+                    peso_unidad_medida = :peso_unidad_medida, 
+                    num_bultos = :num_bultos, 
+                    valor_comercial = :valor_comercial, 
+                    fecha_conclusion_descarga = :fecha_conclusion_descarga, 
+                    consignatario_id = :consignatario_id, 
+                    remitente_id = :remitente_id,
+                    numero_pedimento = :numero_pedimento,
+                    fraccion_arancelaria = :fraccion_arancelaria
+                WHERE id = :id";
+        
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            
+            // Asignar los valores a los parámetros
+            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
+            $stmt->bindParam(':fecha_ingreso', $data['fecha_ingreso']);
+            $stmt->bindParam(':num_conocimiento_embarque', $data['num_conocimiento_embarque']);
+            $stmt->bindParam(':num_registro_buque_vuelo_contenedor', $data['num_registro_buque_vuelo_contenedor']);
+            $stmt->bindParam(':dimension_tipo_sellos_candados', $data['dimension_tipo_sellos_candados']);
+            $stmt->bindParam(':primer_puerto_terminal', $data['primer_puerto_terminal']);
+            $stmt->bindParam(':descripcion_mercancia', $data['descripcion_mercancia']);
+            $stmt->bindParam(':peso_unidad_medida', $data['peso_unidad_medida']);
+            $stmt->bindParam(':num_bultos', $data['num_bultos'], PDO::PARAM_INT);
+            $stmt->bindParam(':valor_comercial', $data['valor_comercial']);
+            $stmt->bindParam(':fecha_conclusion_descarga', $data['fecha_conclusion_descarga']);
+            $stmt->bindParam(':consignatario_id', $data['consignatario_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':remitente_id', $data['remitente_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':numero_pedimento', $data['numero_pedimento']);
+            $stmt->bindParam(':fraccion_arancelaria', $data['fraccion_arancelaria']);
+
+            $result = $stmt->execute();
+            
+            // Verificar si se actualizó algún registro
+            if ($result && $stmt->rowCount() > 0) {
+                return true;
+            } else if ($result && $stmt->rowCount() === 0) {
+                error_log("Advertencia: No se actualizó ningún registro con ID: " . $data['id']);
+                return false;
+            } else {
+                error_log("Error: No se pudo ejecutar la actualización del registro de bitácora");
+                return false;
+            }
+            
+        } catch (PDOException $e) {
+            error_log("Error al actualizar registro de bitácora: " . $e->getMessage());
+            return false;
+        }
+    }
     /**
      * Elimina un registro de bitácora por su ID.
      * @param int $id El ID del registro a eliminar.
