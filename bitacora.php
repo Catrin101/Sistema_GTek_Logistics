@@ -473,7 +473,7 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
                             <td>
-                                <div class="action-buttons">
+                                <div class="actions-container">
                                     <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
                                     <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
                                     <a href="/eliminar_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>"
