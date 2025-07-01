@@ -359,6 +359,110 @@ include __DIR__ . '/src/views/header.php';
     color: white;
 }
 
+/* === ESTILOS PARA IMPRESIÓN === */
+@media print {
+    /* Ocultar elementos que no deben aparecer en el PDF */
+    .filters-container,
+    .table-actions,
+    .pagination-container,
+    .btn-view,
+    .btn-delete,
+    .actions-container,
+    header.app-header,
+    .user-info,
+    nav {
+        display: none !important;
+    }
+    
+    /* Ajustes para la página impresa */
+    body {
+        background: white !important;
+        font-size: 12px;
+    }
+    
+    .logbook-container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: white;
+        box-shadow: none;
+    }
+    
+    .logbook-header {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+    }
+    
+    .logbook-title {
+        font-size: 20px;
+        color: #000;
+    }
+    
+    .table-container {
+        border-radius: 0;
+        box-shadow: none;
+        border: 1px solid #333;
+    }
+    
+    .table-header {
+        padding: 10px;
+        border-bottom: 1px solid #333;
+    }
+    
+    .records-count {
+        font-weight: bold;
+        color: #000;
+    }
+    
+    .data-table {
+        font-size: 11px;
+    }
+    
+    .data-table th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        font-weight: bold;
+        border: 1px solid #333;
+        padding: 8px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .data-table td {
+        border: 1px solid #333;
+        padding: 8px;
+        color: #000 !important;
+    }
+    
+    .operation-tag {
+        border: 1px solid #333;
+        color: #000 !important;
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    /* Información adicional en el pie de página */
+    .print-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 10px;
+        color: #666;
+        border-top: 1px solid #333;
+        padding: 5px;
+        background: white;
+    }
+    
+    /* Forzar salto de página si es necesario */
+    .page-break {
+        page-break-before: always;
+    }
+}
+
 @media (max-width: 768px) {
     .filters-row {
         grid-template-columns: 1fr;
@@ -379,6 +483,17 @@ include __DIR__ . '/src/views/header.php';
 <div class="logbook-container">
     <div class="logbook-header">
         <h1 class="logbook-title">Merchandise Movement Logbook</h1>
+        <div class="print-info" style="font-size: 14px; color: #666; margin-top: 10px;">
+            Generated on: <?php echo date('d/m/Y H:i A'); ?> | 
+            User: <?php echo htmlspecialchars(Auth::getUsername()); ?>
+            <?php if (!empty($filters)): ?>
+                <br>Filters applied: 
+                <?php if (!empty($filters['fecha_inicio'])): ?>Start: <?php echo $filters['fecha_inicio']; ?><?php endif; ?>
+                <?php if (!empty($filters['fecha_fin'])): ?> | End: <?php echo $filters['fecha_fin']; ?><?php endif; ?>
+                <?php if (!empty($filters['tipo_operacion'])): ?> | Type: <?php echo $filters['tipo_operacion']; ?><?php endif; ?>
+                <?php if (!empty($filters['search_query'])): ?> | Search: "<?php echo htmlspecialchars($filters['search_query']); ?>"<?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="filters-container">
@@ -425,7 +540,7 @@ include __DIR__ . '/src/views/header.php';
         <div class="table-header">
             <span class="records-count"><?php echo $totalRegistros; ?> records found</span>
             <div class="table-actions">
-                <button class="btn-export">Export</button>
+                <button class="btn-export" id="btn-print" onclick="printLogbook()">Export</button>
                 <div class="records-per-page">
                     <span>Adjust Records Per Page</span>
                     <form method="GET" style="display: inline;">
@@ -452,7 +567,7 @@ include __DIR__ . '/src/views/header.php';
                     <th>Document</th>
                     <th>Merchandise</th>
                     <th>Consignee</th>
-                    <th>Actions</th>
+                    <th class="no-print">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -472,7 +587,7 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($registro['num_conocimiento_embarque']); ?></td>
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>
-                            <td>
+                            <td class="no-print">
                                 <div class="actions-container">
                                     <a href="/detalle_registro.php?id=<?php echo htmlspecialchars($registro['id']); ?>" class="btn-view">View</a>
                                     <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
@@ -499,9 +614,54 @@ include __DIR__ . '/src/views/header.php';
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
-        </div>
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Pie de página para impresión -->
+<div class="print-footer" style="display: none;">
+    <p>Gtek Logistics - Merchandise Movement Logbook | Page <span id="page-number"></span></p>
+</div>
+
+<script>
+function printLogbook() {
+    // Mostrar el pie de página solo al imprimir
+    const printFooter = document.querySelector('.print-footer');
+    if (printFooter) {
+        printFooter.style.display = 'block';
+    }
+    
+    // Cambiar el título del documento temporalmente
+    const originalTitle = document.title;
+    document.title = 'Bitacora_Mercancia_' + new Date().toISOString().split('T')[0];
+    
+    // Llamar a la función de impresión
+    window.print();
+    
+    // Restaurar el título original después de la impresión
+    setTimeout(() => {
+        document.title = originalTitle;
+        if (printFooter) {
+            printFooter.style.display = 'none';
+        }
+    }, 1000);
+}
+
+// También puedes agregar un evento para detectar cuando se cancela la impresión
+window.addEventListener('afterprint', function() {
+    const printFooter = document.querySelector('.print-footer');
+    if (printFooter) {
+        printFooter.style.display = 'none';
+    }
+});
+
+// Agregar funcionalidad adicional para el atajo de teclado Ctrl+P
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        printLogbook();
+    }
+});
+</script>
 
 <?php include __DIR__ . '/src/views/footer.php'; ?>

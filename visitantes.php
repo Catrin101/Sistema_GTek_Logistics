@@ -256,18 +256,6 @@ include __DIR__ . '/src/views/header.php';
     border-color: #007bff;
 }
 
-@media (max-width: 768px) {
-    .table-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-    }
-    
-    .table-actions {
-        justify-content: space-between;
-    }
-}
-
 .btn-delete {
     background: #dc3545;
     color: white;
@@ -279,8 +267,8 @@ include __DIR__ . '/src/views/header.php';
     text-decoration: none;
     display: inline-block;
     transition: background-color 0.2s;
-    margin-left: 8px; /* Más espacio entre botones */
-    vertical-align: middle; /* Alinear verticalmente */
+    margin-left: 8px;
+    vertical-align: middle;
 }
 
 .btn-delete:hover {
@@ -288,11 +276,125 @@ include __DIR__ . '/src/views/header.php';
     color: white;
     text-decoration: none;
 }
+
+/* === ESTILOS PARA IMPRESIÓN === */
+@media print {
+    /* Ocultar elementos que no deben aparecer en el PDF */
+    .filters-container,
+    .table-actions,
+    .pagination-container,
+    .btn-delete,
+    header.app-header,
+    .user-info,
+    nav {
+        display: none !important;
+    }
+    
+    /* Ajustes para la página impresa */
+    body {
+        background: white !important;
+        font-size: 12px;
+    }
+    
+    .logbook-container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: white;
+        box-shadow: none;
+    }
+    
+    .logbook-header {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+    }
+    
+    .logbook-title {
+        font-size: 20px;
+        color: #000;
+    }
+    
+    .table-container {
+        border-radius: 0;
+        box-shadow: none;
+        border: 1px solid #333;
+    }
+    
+    .table-header {
+        padding: 10px;
+        border-bottom: 1px solid #333;
+    }
+    
+    .records-count {
+        font-weight: bold;
+        color: #000;
+    }
+    
+    .data-table {
+        font-size: 11px;
+    }
+    
+    .data-table th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        font-weight: bold;
+        border: 1px solid #333;
+        padding: 8px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .data-table td {
+        border: 1px solid #333;
+        padding: 8px;
+        color: #000 !important;
+    }
+    
+    /* Información adicional en el pie de página */
+    .print-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 10px;
+        color: #666;
+        border-top: 1px solid #333;
+        padding: 5px;
+        background: white;
+    }
+    
+    /* Forzar salto de página si es necesario */
+    .page-break {
+        page-break-before: always;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .table-actions {
+        justify-content: space-between;
+    }
+}
 </style>
 
 <div class="logbook-container">
     <div class="logbook-header">
         <h1 class="logbook-title">Visitor Management System</h1>
+        <div class="print-info" style="font-size: 14px; color: #666; margin-top: 10px;">
+            Generated on: <?php echo date('d/m/Y H:i A'); ?> | 
+            User: <?php echo htmlspecialchars(Auth::getUsername()); ?>
+            <?php if (!empty($filters)): ?>
+                <br>Filters applied: 
+                <?php if (!empty($filters['search_query'])): ?>Search: "<?php echo htmlspecialchars($filters['search_query']); ?>"<?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="filters-container">
@@ -314,7 +416,7 @@ include __DIR__ . '/src/views/header.php';
         <div class="table-header">
             <span class="records-count"><?php echo $totalRecords; ?> visitors found</span>
             <div class="table-actions">
-                <button class="btn-export">Export</button>
+                <button class="btn-export" id="btn-print" onclick="printVisitors()">Export</button>
                 <div class="records-per-page">
                     <span>Records Per Page</span>
                     <form method="GET" style="display: inline;">
@@ -341,16 +443,16 @@ include __DIR__ . '/src/views/header.php';
                     <th>Name</th>
                     <th>Verification Number</th>
                     <th>Registration Date</th>
-                    <th>Imagen</th>
-                    <?php if ($isAdmin): // Mostrar columna de acciones solo si es admin ?>
-                    <th>Acciones</th>
+                    <th class="no-print">Image</th>
+                    <?php if ($isAdmin): ?>
+                    <th class="no-print">Actions</th>
                     <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($visitantes)): ?>
                     <tr>
-                        <td colspan="4" class="no-records">No visitors found</td>
+                        <td colspan="<?php echo $isAdmin ? '6' : '5'; ?>" class="no-records">No visitors found</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($visitantes as $visitante): ?>
@@ -359,10 +461,9 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($visitante['nombre']); ?></td>
                             <td><?php echo htmlspecialchars($visitante['numero_verificacion'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
-                            <td>
-                                Imagen no encontrada
-                            <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
-                            <td>
+                            <td class="no-print">Image not found</td>
+                            <?php if ($isAdmin): ?>
+                            <td class="no-print">
                                 <a href="/eliminar_visitante.php?id=<?php echo htmlspecialchars($visitante['id']); ?>"
                                    class="btn-delete"
                                    title="Eliminar Visitante"
@@ -389,5 +490,51 @@ include __DIR__ . '/src/views/header.php';
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Pie de página para impresión -->
+<div class="print-footer" style="display: none;">
+    <p>Gtek Logistics - Visitor Management System | Page <span id="page-number"></span></p>
+</div>
+
+<script>
+function printVisitors() {
+    // Mostrar el pie de página solo al imprimir
+    const printFooter = document.querySelector('.print-footer');
+    if (printFooter) {
+        printFooter.style.display = 'block';
+    }
+    
+    // Cambiar el título del documento temporalmente
+    const originalTitle = document.title;
+    document.title = 'Visitantes_' + new Date().toISOString().split('T')[0];
+    
+    // Llamar a la función de impresión
+    window.print();
+    
+    // Restaurar el título original después de la impresión
+    setTimeout(() => {
+        document.title = originalTitle;
+        if (printFooter) {
+            printFooter.style.display = 'none';
+        }
+    }, 1000);
+}
+
+// También puedes agregar un evento para detectar cuando se cancela la impresión
+window.addEventListener('afterprint', function() {
+    const printFooter = document.querySelector('.print-footer');
+    if (printFooter) {
+        printFooter.style.display = 'none';
+    }
+});
+
+// Agregar funcionalidad adicional para el atajo de teclado Ctrl+P
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        printVisitors();
+    }
+});
+</script>
 
 <?php include __DIR__ . '/src/views/footer.php'; ?>
