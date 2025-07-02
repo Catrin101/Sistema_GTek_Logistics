@@ -347,5 +347,23 @@ class Bitacora {
             return false;
         }
     }
+
+    /**
+     * Obtiene un registro de bitácora por su número de conocimiento de embarque.
+     * @param string $numConocimiento El número de conocimiento de embarque.
+     * @return array|null El registro o null si no se encuentra.
+     */
+    public function getRegistroByNumConocimiento(string $numConocimiento) {
+        $sql = "SELECT id FROM bitacora_registros WHERE num_conocimiento_embarque = :num_conocimiento_embarque LIMIT 1";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':num_conocimiento_embarque', $numConocimiento);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al obtener registro por número de conocimiento de embarque: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
