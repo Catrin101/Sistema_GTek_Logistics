@@ -19,8 +19,15 @@ $formData = $_POST; // Guardamos todos los datos del POST para repoblado
 $errors = [];
 $successMessage = '';
 
+// --- NUEVO BLOQUE: Determinar el valor seleccionado para tipo_operacion ---
+// Si ya hay un valor en $formData (después de un POST con errores) úsalo.
+// De lo contrario, establece 'Entrada' como predeterminado para la primera carga (GET).
+$selectedTipoOperacion = $formData['tipo_operacion'] ?? 'Entrada';
+
 // Procesar el formulario si se envió
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Asegurarse de que tipo_operacion esté presente y limpiar espacios
+    $formData['tipo_operacion'] = trim($formData['tipo_operacion'] ?? '');
     // --- Validaciones (Tarea 3) ---
     // General
     if (empty($formData['fecha_ingreso'])) $errors[] = "La Fecha de Ingreso es obligatoria.";
@@ -59,8 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "La Fracción Arancelaria debe ser un número decimal válido.";
     }
 
-    // Nuevas validaciones
-    //if (empty($formData['tipo_operacion'])) $errors[] = "El Tipo de Operación es obligatorio.";
+    // Validar tipo_operacion estrictamente
     if (!empty($formData['patente']) && !filter_var($formData['patente'], FILTER_VALIDATE_INT)) {
         $errors[] = "La Patente debe ser un número entero válido.";
     }
@@ -94,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 3. Crear Registro de Bitácora
             $registroData = [
                 'fecha_ingreso' => $formData['fecha_ingreso'],
-                'tipo_operacion' => 'Entrada', // Por ahora, es solo de entrada
+                'tipo_operacion' => 'Entrada',
                 'num_conocimiento_embarque' => $formData['num_conocimiento_embarque'],
                 'num_registro_buque_vuelo_contenedor' => $formData['num_registro_buque_vuelo_contenedor'],
                 'dimension_tipo_sellos_candados' => $formData['dimension_sellos_candados'] ?? null,
@@ -472,14 +478,6 @@ body {
                     <label for="fecha_ingreso">Fecha de Ingreso *</label>
                     <input type="datetime-local" id="fecha_ingreso" name="fecha_ingreso" 
                         value="<?php echo htmlspecialchars($formData['fecha_ingreso'] ?? date('Y-m-d\TH:i')); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="tipo_operacion">Tipo de Operación *</label>
-                    <select id="tipo_operacion" name="tipo_operacion" required>
-                        <option value="">Seleccione...</option>
-                        <option value="Entrada" <?php echo (isset($formData['tipo_operacion']) && $formData['tipo_operacion'] == 'Entrada') ? 'selected' : ''; ?>>Entrada</option>
-                        <option value="Salida" <?php echo (isset($formData['tipo_operacion']) && $formData['tipo_operacion'] == 'Salida') ? 'selected' : ''; ?>>Salida</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label for="num_conocimiento_embarque">Número de Conocimiento de Embarque *</label>

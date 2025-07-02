@@ -73,6 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Procesar el formulario si se envió
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Asegurarse de que tipo_operacion esté presente y limpiar espacios
+    $formData['tipo_operacion'] = trim($formData['tipo_operacion'] ?? '');
     // --- Validaciones (las mismas que en registro_entrada.php) ---
     // General
     if (empty($formData['fecha_ingreso'])) $errors[] = "La Fecha de Ingreso es obligatoria.";
@@ -102,6 +104,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($formData['remitente_nombre'])) $errors[] = "El Nombre de quien envía (Remitente) es obligatorio.";
     if (empty($formData['remitente_domicilio'])) $errors[] = "El Domicilio de quien envía (Remitente) es obligatorio.";
 
+    // Validar tipo_operacion estrictamente
+    if (!in_array($formData['tipo_operacion'], ['Entrada', 'Salida'])) {
+        $errors[] = "El Tipo de Operación es obligatorio y debe ser 'Entrada' o 'Salida'.";
+    }
+    if (!empty($formData['patente']) && !filter_var($formData['patente'], FILTER_VALIDATE_INT)) {
+        $errors[] = "La Patente debe ser un número entero válido.";
+    }
+    if (!empty($formData['piezas']) && (!filter_var($formData['piezas'], FILTER_VALIDATE_INT) || $formData['piezas'] < 0)) {
+        $errors[] = "El número de Piezas debe ser un número entero positivo válido.";
+    }
+
     // Si no hay errores de validación, proceder a actualizar
     if (empty($errors)) {
         try {
@@ -125,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateData = [
                 'id' => $registroId,
                 'fecha_ingreso' => $formData['fecha_ingreso'],
+                'tipo_operacion' => $formData['tipo_operacion'],
                 'num_conocimiento_embarque' => $formData['num_conocimiento_embarque'],
                 'num_registro_buque_vuelo_contenedor' => $formData['num_registro_buque_vuelo_contenedor'],
                 'dimension_tipo_sellos_candados' => $formData['dimension_sellos_candados'] ?? null,
