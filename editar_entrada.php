@@ -42,9 +42,8 @@ if (!$registro) {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $formData = [
         'fecha_ingreso' => date('Y-m-d\TH:i', strtotime($registro['fecha_ingreso'])),
+        'tipo_operacion' => $registro['tipo_operacion'], // Añadir esta línea
         'num_conocimiento_embarque' => $registro['num_conocimiento_embarque'],
-        'numero_pedimento' => $registro['numero_pedimento'],
-        'fraccion_arancelaria' => $registro['fraccion_arancelaria'],
         'num_registro_buque_vuelo_contenedor' => $registro['num_registro_buque_vuelo_contenedor'],
         'dimension_sellos_candados' => $registro['dimension_tipo_sellos_candados'],
         'primer_puerto_terminal' => $registro['primer_puerto_terminal'],
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'peso_unidad_medida' => $registro['peso_unidad_medida'],
         'num_bultos' => $registro['num_bultos'],
         'valor_comercial' => $registro['valor_comercial'],
-        'fecha_conclusion_descarga' => $registro['fecha_conclusion_descarga'] ? date('Y-m-d\TH:i', strtotime($registro['fecha_conclusion_descarga'])) : '',
+        'fecha_conclusion_descarga' => !empty($registro['fecha_conclusion_descarga']) ? date('Y-m-d\TH:i', strtotime($registro['fecha_conclusion_descarga'])) : '',
         'consignatario_nombre' => $registro['consignatario_nombre'],
         'consignatario_domicilio' => $registro['consignatario_domicilio'],
         'consignatario_rfc' => $registro['consignatario_rfc'],
@@ -60,7 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'consignatario_telefono' => $registro['consignatario_telefono'],
         'remitente_nombre' => $registro['remitente_nombre'],
         'remitente_domicilio' => $registro['remitente_domicilio'],
-        'remitente_pais_origen' => $registro['remitente_pais_origen']
+        'remitente_pais_origen' => $registro['remitente_pais_origen'],
+        'numero_pedimento' => $registro['numero_pedimento'],
+        'fraccion_arancelaria' => $registro['fraccion_arancelaria'],
+        'regimen' => $registro['regimen'], // Añadir esta línea
+        'patente' => $registro['patente'],   // Añadir esta línea
+        'piezas' => $registro['piezas'],     // Añadir esta línea
     ];
 } else {
     // Si se envió el formulario, usar los datos del POST
@@ -445,6 +449,14 @@ body {
                            value="<?php echo htmlspecialchars($formData['fecha_ingreso'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
+                    <label for="tipo_operacion">Tipo de Operación *</label>
+                    <select id="tipo_operacion" name="tipo_operacion" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Entrada" <?php echo (isset($formData['tipo_operacion']) && $formData['tipo_operacion'] == 'Entrada') ? 'selected' : ''; ?>>Entrada</option>
+                        <option value="Salida" <?php echo (isset($formData['tipo_operacion']) && $formData['tipo_operacion'] == 'Salida') ? 'selected' : ''; ?>>Salida</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="num_conocimiento_embarque">Número de Conocimiento de Embarque <span class="required">*</span></label>
                     <input type="text" id="num_conocimiento_embarque" name="num_conocimiento_embarque" 
                            placeholder="EJ: BL123456789" 
@@ -490,6 +502,24 @@ body {
                     <input type="number" step="0.01" id="peso_unidad_medida" name="peso_unidad_medida" 
                            placeholder="1000.50" 
                            value="<?php echo htmlspecialchars($formData['peso_unidad_medida'] ?? ''); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="regimen">Régimen</label>
+                    <input type="text" id="regimen" name="regimen"
+                           value="<?php echo htmlspecialchars($formData['regimen'] ?? ''); ?>"
+                           placeholder="Ej. Importación definitiva">
+                </div>
+                <div class="form-group">
+                    <label for="patente">Patente</label>
+                    <input type="number" id="patente" name="patente"
+                           value="<?php echo htmlspecialchars($formData['patente'] ?? ''); ?>"
+                           placeholder="Ingrese el número de patente">
+                </div>
+                <div class="form-group">
+                    <label for="piezas">Piezas</label>
+                    <input type="number" id="piezas" name="piezas"
+                           value="<?php echo htmlspecialchars($formData['piezas'] ?? ''); ?>"
+                           placeholder="Cantidad de piezas">
                 </div>
                 <div class="form-group">
                     <label for="num_bultos">Número de Bultos <span class="required">*</span></label>

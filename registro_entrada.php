@@ -49,6 +49,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($formData['remitente_nombre'])) $errors[] = "El Nombre de quien envía (Remitente) es obligatorio.";
     if (empty($formData['remitente_domicilio'])) $errors[] = "El Domicilio de quien envía (Remitente) es obligatorio.";
 
+    // Validación para numero_pedimento (int)
+    if (!empty($formData['numero_pedimento']) && !filter_var($formData['numero_pedimento'], FILTER_VALIDATE_INT)) {
+        $errors[] = "El Número de Pedimento debe ser un número entero válido.";
+    }
+
+    // Validación para fraccion_arancelaria (decimal)
+    if (!empty($formData['fraccion_arancelaria']) && !filter_var($formData['fraccion_arancelaria'], FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_FRACTION)) {
+        $errors[] = "La Fracción Arancelaria debe ser un número decimal válido.";
+    }
+
+    // Nuevas validaciones
+    if (empty($formData['tipo_operacion'])) $errors[] = "El Tipo de Operación es obligatorio.";
+    if (!empty($formData['patente']) && !filter_var($formData['patente'], FILTER_VALIDATE_INT)) {
+        $errors[] = "La Patente debe ser un número entero válido.";
+    }
+    if (!empty($formData['piezas']) && (!filter_var($formData['piezas'], FILTER_VALIDATE_INT) || $formData['piezas'] < 0)) {
+        $errors[] = "El número de Piezas debe ser un número entero positivo válido.";
+    }
 
     // Si no hay errores de validación, proceder a guardar
     if (empty($errors)) {
@@ -76,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 3. Crear Registro de Bitácora
             $registroData = [
                 'fecha_ingreso' => $formData['fecha_ingreso'],
-                'tipo_operacion' => 'Entrada', // Por ahora, es solo de entrada
+                'tipo_operacion' => $formData['tipo_operacion'], // Ahora se toma del formulario
                 'num_conocimiento_embarque' => $formData['num_conocimiento_embarque'],
                 'num_registro_buque_vuelo_contenedor' => $formData['num_registro_buque_vuelo_contenedor'],
                 'dimension_tipo_sellos_candados' => $formData['dimension_sellos_candados'] ?? null,
@@ -88,9 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'fecha_conclusion_descarga' => !empty($formData['fecha_conclusion_descarga']) ? $formData['fecha_conclusion_descarga'] : null,
                 'consignatario_id' => $consignatario_id,
                 'remitente_id' => $remitente_id,
-                'registrado_por_user_id' => Auth::getUserId(), // Obtener el ID del usuario logueado
-                'numero_pedimento' => $formData['numero_pedimento'] ?? null, /* Nuevo campo */
-                'fraccion_arancelaria' => $formData['fraccion_arancelaria'] ?? null, /* Nuevo campo */
+                'registrado_por_user_id' => Auth::getUserId(),
+                'numero_pedimento' => $formData['numero_pedimento'] ?? null,
+                'fraccion_arancelaria' => $formData['fraccion_arancelaria'] ?? null,
+                'regimen' => $formData['regimen'] ?? null, // Nuevo campo
+                'patente' => $formData['patente'] ?? null,   // Nuevo campo
+                'piezas' => $formData['piezas'] ?? null,     // Nuevo campo
             ];
 
             $newRecordId = $bitacoraModel->createRegistro($registroData);
@@ -109,7 +130,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
+error_log("POST Data recibido: " . print_r($_POST, true));
+error_log("Tipo de operación recibido: " . (isset($_POST['tipo_operacion']) ? $_POST['tipo_operacion'] : 'NO DEFINIDO'));
 include __DIR__ . '/src/views/header.php';
 ?>
 
@@ -449,13 +471,27 @@ body {
                 <div class="form-group">
                     <label for="fecha_ingreso">Fecha de Ingreso *</label>
                     <input type="datetime-local" id="fecha_ingreso" name="fecha_ingreso" 
-                           value="<?php echo htmlspecialchars($formData['fecha_ingreso'] ?? date('Y-m-d\TH:i')); ?>" required>
+                        value="<?php echo htmlspecialchars($formData['fecha_ingreso'] ?? date('Y-m-d\TH:i')); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipo_operacion">Tipo de Operación *</label>
+                    <select id="tipo_operacion" name="tipo_operacion" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Entrada" <?php echo (isset($formData['tipo_operacion']) && $formData['tipo_operacion'] == 'Entrada') ? 'selected' : ''; ?>>Entrada</option>
+                        <option value="Salida" <?php echo (isset($formData['tipo_operacion']) && $formData['tipo_operacion'] == 'Salida') ? 'selected' : ''; ?>>Salida</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="num_conocimiento_embarque">Número de Conocimiento de Embarque *</label>
                     <input type="text" id="num_conocimiento_embarque" name="num_conocimiento_embarque" 
-                           placeholder="EJ: BL123456789" 
-                           value="<?php echo htmlspecialchars($formData['num_conocimiento_embarque'] ?? ''); ?>" required>
+                        placeholder="EJ: BL123456789" 
+                        value="<?php echo htmlspecialchars($formData['num_conocimiento_embarque'] ?? ''); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="num_registro_buque_vuelo_contenedor">Número de Registro (Buque/Vuelo/Contenedor) *</label>
+                    <input type="text" id="num_registro_buque_vuelo_contenedor" name="num_registro_buque_vuelo_contenedor" 
+                        placeholder="EJ: CONT123456" 
+                        value="<?php echo htmlspecialchars($formData['num_registro_buque_vuelo_contenedor'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="numero_pedimento">Número de Pedimento</label>
@@ -470,45 +506,57 @@ body {
                         placeholder="Ej. 9802.00.00.00">
                 </div>
                 <div class="form-group">
-                    <label for="num_registro_buque_vuelo_contenedor">Número de Registro (Buque/Vuelo/Contenedor) *</label>
-                    <input type="text" id="num_registro_buque_vuelo_contenedor" name="num_registro_buque_vuelo_contenedor" 
-                           placeholder="EJ: CONT123456" 
-                           value="<?php echo htmlspecialchars($formData['num_registro_buque_vuelo_contenedor'] ?? ''); ?>" required>
+                    <label for="regimen">Régimen</label>
+                    <input type="text" id="regimen" name="regimen"
+                        value="<?php echo htmlspecialchars($formData['regimen'] ?? ''); ?>"
+                        placeholder="Ej. Importación definitiva">
+                </div>
+                <div class="form-group">
+                    <label for="patente">Patente</label>
+                    <input type="number" id="patente" name="patente"
+                        value="<?php echo htmlspecialchars($formData['patente'] ?? ''); ?>"
+                        placeholder="Ingrese el número de patente">
+                </div>
+                <div class="form-group">
+                    <label for="piezas">Piezas</label>
+                    <input type="number" id="piezas" name="piezas"
+                        value="<?php echo htmlspecialchars($formData['piezas'] ?? ''); ?>"
+                        placeholder="Cantidad de piezas">
                 </div>
                 <div class="form-group">
                     <label for="dimension_sellos_candados">Dimensión/Tipo/Sellos/Candados</label>
                     <input type="text" id="dimension_sellos_candados" name="dimension_sellos_candados" 
-                           placeholder="Descripción detallada" 
-                           value="<?php echo htmlspecialchars($formData['dimension_sellos_candados'] ?? ''); ?>">
+                        placeholder="Descripción detallada" 
+                        value="<?php echo htmlspecialchars($formData['dimension_sellos_candados'] ?? ''); ?>">
                 </div>
                 <div class="form-group">
                     <label for="primer_puerto_terminal">Primer Puerto/Aeropuerto/Terminal *</label>
                     <input type="text" id="primer_puerto_terminal" name="primer_puerto_terminal" 
-                           placeholder="EJ: Puerto de Veracruz" 
-                           value="<?php echo htmlspecialchars($formData['primer_puerto_terminal'] ?? ''); ?>" required>
+                        placeholder="EJ: Puerto de Veracruz" 
+                        value="<?php echo htmlspecialchars($formData['primer_puerto_terminal'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="descripcion_mercancia">Descripción de la Mercancía *</label>
                     <textarea id="descripcion_mercancia" name="descripcion_mercancia" rows="3" 
-                              placeholder="Descripción detallada de la mercancía" required><?php echo htmlspecialchars($formData['descripcion_mercancia'] ?? ''); ?></textarea>
+                            placeholder="Descripción detallada de la mercancía" required><?php echo htmlspecialchars($formData['descripcion_mercancia'] ?? ''); ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="peso_unidad_medida">Peso y Unidad de Medida *</label>
                     <input type="number" step="0.01" id="peso_unidad_medida" name="peso_unidad_medida" 
-                           placeholder="1000.50" 
-                           value="<?php echo htmlspecialchars($formData['peso_unidad_medida'] ?? ''); ?>" required>
+                        placeholder="1000.50" 
+                        value="<?php echo htmlspecialchars($formData['peso_unidad_medida'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="num_bultos">Número de Bultos *</label>
                     <input type="number" id="num_bultos" name="num_bultos" 
-                           placeholder="100" 
-                           value="<?php echo htmlspecialchars($formData['num_bultos'] ?? ''); ?>" required>
+                        placeholder="100" 
+                        value="<?php echo htmlspecialchars($formData['num_bultos'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="valor_comercial">Valor Comercial *</label>
                     <input type="number" step="0.01" id="valor_comercial" name="valor_comercial" 
-                           placeholder="50000.00" 
-                           value="<?php echo htmlspecialchars($formData['valor_comercial'] ?? ''); ?>" required>
+                        placeholder="50000.00" 
+                        value="<?php echo htmlspecialchars($formData['valor_comercial'] ?? ''); ?>" required>
                 </div>
             </div>
 

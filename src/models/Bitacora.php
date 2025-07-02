@@ -23,23 +23,26 @@ class Bitacora {
      * @return array Array de registros de bitácora.
      */
     public function getAllRegistros($filters = [], $limit = 10, $offset = 0) {
-        $sql = "SELECT 
-                    br.id, 
-                    br.fecha_ingreso, 
-                    br.tipo_operacion, 
+        $sql = "SELECT
+                    br.id,
+                    br.fecha_ingreso,
+                    br.tipo_operacion,
                     br.num_conocimiento_embarque,
-                    br.numero_pedimento, /* Campo nuevo */
-                    br.fraccion_arancelaria, /* Campo nuevo */
+                    br.numero_pedimento,
+                    br.fraccion_arancelaria,
+                    br.regimen, /* Nuevo campo */
+                    br.patente, /* Nuevo campo */
+                    br.piezas, /* Nuevo campo */
                     br.descripcion_mercancia,
                     br.peso_unidad_medida,
                     br.num_bultos,
                     c.nombre AS consignatario_nombre,
                     r.nombre AS remitente_nombre
-                FROM 
+                FROM
                     bitacora_registros br
-                LEFT JOIN 
+                LEFT JOIN
                     consignatarios c ON br.consignatario_id = c.id
-                LEFT JOIN 
+                LEFT JOIN
                     remitentes r ON br.remitente_id = r.id
                 WHERE 1=1"; // Cláusula WHERE base para añadir filtros
 
@@ -144,21 +147,21 @@ class Bitacora {
      * @return array|null El registro o null si no se encuentra.
      */
     public function getRegistroById(int $id) {
-        $sql = "SELECT 
-                    br.*, 
+        $sql = "SELECT
+                    br.*,
                     c.nombre AS consignatario_nombre, c.domicilio AS consignatario_domicilio, c.rfc AS consignatario_rfc, c.email AS consignatario_email, c.telefono AS consignatario_telefono,
                     r.nombre AS remitente_nombre, r.domicilio AS remitente_domicilio, r.pais_origen AS remitente_pais_origen,
                     u.username AS registrado_por_username,
                     u.email AS registrado_por_email_usuario -- AGREGADO: Obtener el email del usuario
-                FROM 
+                FROM
                     bitacora_registros br
-                JOIN 
+                JOIN
                     consignatarios c ON br.consignatario_id = c.id
-                JOIN 
+                JOIN
                     remitentes r ON br.remitente_id = r.id
                 JOIN
                     users u ON br.registrado_por_user_id = u.id
-                WHERE 
+                WHERE
                     br.id = :id";
         
         try {
@@ -179,47 +182,53 @@ class Bitacora {
      */
     public function createRegistro(array $data) {
         $sql = "INSERT INTO bitacora_registros (
-                    fecha_ingreso, 
-                    tipo_operacion, 
-                    num_conocimiento_embarque, 
-                    num_registro_buque_vuelo_contenedor, 
-                    dimension_tipo_sellos_candados, 
-                    primer_puerto_terminal, 
-                    descripcion_mercancia, 
-                    peso_unidad_medida, 
-                    num_bultos, 
-                    valor_comercial, 
-                    fecha_conclusion_descarga, 
-                    consignatario_id, 
-                    remitente_id, 
+                    fecha_ingreso,
+                    tipo_operacion,
+                    num_conocimiento_embarque,
+                    num_registro_buque_vuelo_contenedor,
+                    dimension_tipo_sellos_candados,
+                    primer_puerto_terminal,
+                    descripcion_mercancia,
+                    peso_unidad_medida,
+                    num_bultos,
+                    valor_comercial,
+                    fecha_conclusion_descarga,
+                    consignatario_id,
+                    remitente_id,
                     registrado_por_user_id,
-                    numero_pedimento, /* Campo nuevo */
-                    fraccion_arancelaria /* Campo nuevo */
+                    numero_pedimento,
+                    fraccion_arancelaria,
+                    regimen, /* Nuevo campo */
+                    patente, /* Nuevo campo */
+                    piezas /* Nuevo campo */
                 ) VALUES (
-                    :fecha_ingreso, 
-                    :tipo_operacion, 
-                    :num_conocimiento_embarque, 
-                    :num_registro_buque_vuelo_contenedor, 
-                    :dimension_tipo_sellos_candados, 
-                    :primer_puerto_terminal, 
-                    :descripcion_mercancia, 
-                    :peso_unidad_medida, 
-                    :num_bultos, 
-                    :valor_comercial, 
-                    :fecha_conclusion_descarga, 
-                    :consignatario_id, 
-                    :remitente_id, 
+                    :fecha_ingreso,
+                    :tipo_operacion,
+                    :num_conocimiento_embarque,
+                    :num_registro_buque_vuelo_contenedor,
+                    :dimension_tipo_sellos_candados,
+                    :primer_puerto_terminal,
+                    :descripcion_mercancia,
+                    :peso_unidad_medida,
+                    :num_bultos,
+                    :valor_comercial,
+                    :fecha_conclusion_descarga,
+                    :consignatario_id,
+                    :remitente_id,
                     :registrado_por_user_id,
-                    :numero_pedimento, /* Parametro nuevo */
-                    :fraccion_arancelaria /* Parametro nuevo */
+                    :numero_pedimento,
+                    :fraccion_arancelaria,
+                    :regimen, /* Nuevo parametro */
+                    :patente, /* Nuevo parametro */
+                    :piezas /* Nuevo parametro */
                 )";
-        
+
         try {
             $stmt = $this->pdo->prepare($sql);
-            
+
             // Asigna los valores a los parámetros
             $stmt->bindParam(':fecha_ingreso', $data['fecha_ingreso']);
-            $stmt->bindParam(':tipo_operacion', $data['tipo_operacion']);
+            $stmt->bindParam(':tipo_operacion', $data['tipo_operacion']); // Se toma del formulario
             $stmt->bindParam(':num_conocimiento_embarque', $data['num_conocimiento_embarque']);
             $stmt->bindParam(':num_registro_buque_vuelo_contenedor', $data['num_registro_buque_vuelo_contenedor']);
             $stmt->bindParam(':dimension_tipo_sellos_candados', $data['dimension_tipo_sellos_candados']);
@@ -232,9 +241,14 @@ class Bitacora {
             $stmt->bindParam(':consignatario_id', $data['consignatario_id'], PDO::PARAM_INT);
             $stmt->bindParam(':remitente_id', $data['remitente_id'], PDO::PARAM_INT);
             $stmt->bindParam(':registrado_por_user_id', $data['registrado_por_user_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':numero_pedimento', $data['numero_pedimento'], PDO::PARAM_INT);
+            $stmt->bindParam(':fraccion_arancelaria', $data['fraccion_arancelaria']);
+            $stmt->bindParam(':regimen', $data['regimen']); // Nuevo bind
+            $stmt->bindParam(':patente', $data['patente'], PDO::PARAM_INT); // Nuevo bind
+            $stmt->bindParam(':piezas', $data['piezas'], PDO::PARAM_INT); // Nuevo bind
 
             $stmt->execute();
-            return $this->pdo->lastInsertId(); // Devuelve el ID del registro insertado
+            return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
             error_log("Error al crear registro de bitácora: " . $e->getMessage());
             return false;
@@ -254,29 +268,34 @@ class Bitacora {
             return false;
         }
 
-        $sql = "UPDATE bitacora_registros SET 
-                    fecha_ingreso = :fecha_ingreso, 
-                    num_conocimiento_embarque = :num_conocimiento_embarque, 
-                    num_registro_buque_vuelo_contenedor = :num_registro_buque_vuelo_contenedor, 
-                    dimension_tipo_sellos_candados = :dimension_tipo_sellos_candados, 
-                    primer_puerto_terminal = :primer_puerto_terminal, 
-                    descripcion_mercancia = :descripcion_mercancia, 
-                    peso_unidad_medida = :peso_unidad_medida, 
-                    num_bultos = :num_bultos, 
-                    valor_comercial = :valor_comercial, 
-                    fecha_conclusion_descarga = :fecha_conclusion_descarga, 
-                    consignatario_id = :consignatario_id, 
+        $sql = "UPDATE bitacora_registros SET
+                    fecha_ingreso = :fecha_ingreso,
+                    tipo_operacion = :tipo_operacion, /* Nuevo campo */
+                    num_conocimiento_embarque = :num_conocimiento_embarque,
+                    num_registro_buque_vuelo_contenedor = :num_registro_buque_vuelo_contenedor,
+                    dimension_tipo_sellos_candados = :dimension_tipo_sellos_candados,
+                    primer_puerto_terminal = :primer_puerto_terminal,
+                    descripcion_mercancia = :descripcion_mercancia,
+                    peso_unidad_medida = :peso_unidad_medida,
+                    num_bultos = :num_bultos,
+                    valor_comercial = :valor_comercial,
+                    fecha_conclusion_descarga = :fecha_conclusion_descarga,
+                    consignatario_id = :consignatario_id,
                     remitente_id = :remitente_id,
                     numero_pedimento = :numero_pedimento,
-                    fraccion_arancelaria = :fraccion_arancelaria
+                    fraccion_arancelaria = :fraccion_arancelaria,
+                    regimen = :regimen, /* Nuevo campo */
+                    patente = :patente, /* Nuevo campo */
+                    piezas = :piezas /* Nuevo campo */
                 WHERE id = :id";
         
         try {
             $stmt = $this->pdo->prepare($sql);
-            
+
             // Asignar los valores a los parámetros
             $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
             $stmt->bindParam(':fecha_ingreso', $data['fecha_ingreso']);
+            $stmt->bindParam(':tipo_operacion', $data['tipo_operacion']); // Se toma del formulario
             $stmt->bindParam(':num_conocimiento_embarque', $data['num_conocimiento_embarque']);
             $stmt->bindParam(':num_registro_buque_vuelo_contenedor', $data['num_registro_buque_vuelo_contenedor']);
             $stmt->bindParam(':dimension_tipo_sellos_candados', $data['dimension_tipo_sellos_candados']);
@@ -290,6 +309,9 @@ class Bitacora {
             $stmt->bindParam(':remitente_id', $data['remitente_id'], PDO::PARAM_INT);
             $stmt->bindParam(':numero_pedimento', $data['numero_pedimento']);
             $stmt->bindParam(':fraccion_arancelaria', $data['fraccion_arancelaria']);
+            $stmt->bindParam(':regimen', $data['regimen']); // Nuevo bind
+            $stmt->bindParam(':patente', $data['patente'], PDO::PARAM_INT); // Nuevo bind
+            $stmt->bindParam(':piezas', $data['piezas'], PDO::PARAM_INT); // Nuevo bind
 
             $result = $stmt->execute();
             

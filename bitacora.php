@@ -580,11 +580,7 @@ include __DIR__ . '/src/views/header.php';
                     <?php foreach ($registros as $registro): ?>
                         <tr>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($registro['fecha_ingreso']))); ?></td>
-                            <td>
-                                <span class="operation-tag <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'tag-entry' : 'tag-exit'); ?>">
-                                    <?php echo ($registro['tipo_operacion'] === 'Entrada' ? 'Entry' : 'Exit'); ?>
-                                </span>
-                            </td>
+                            <td><?php echo htmlspecialchars($registro['tipo_operacion']); ?></td>
                             <td><?php echo htmlspecialchars($registro['num_conocimiento_embarque']); ?></td>
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>
                             <td><?php echo htmlspecialchars($registro['consignatario_nombre'] ?? 'N/A'); ?></td>

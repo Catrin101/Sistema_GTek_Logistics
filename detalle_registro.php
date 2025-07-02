@@ -441,6 +441,18 @@ body {
                         <div class="detail-label">Peso Total</div>
                         <div class="detail-value weight"><?php echo number_format(htmlspecialchars($registro['peso_unidad_medida']), 0, '.', ','); ?></div>
                     </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Régimen</div>
+                        <div class="detail-value"><?php echo htmlspecialchars($registro['regimen'] ?? 'N/A'); ?></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Patente</div>
+                        <div class="detail-value"><?php echo htmlspecialchars($registro['patente'] ?? 'N/A'); ?></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Piezas</div>
+                        <div class="detail-value"><?php echo htmlspecialchars($registro['piezas'] ?? 'N/A'); ?></div>
+                    </div>
                 </div>
             </div>
 
