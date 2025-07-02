@@ -42,7 +42,7 @@ if (!$registro) {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $formData = [
         'fecha_ingreso' => date('Y-m-d\TH:i', strtotime($registro['fecha_ingreso'])),
-        'tipo_operacion' => $registro['tipo_operacion'], // Añadir esta línea
+        'tipo_operacion' => 'Entrada', // Por ahora, es solo de entrada
         'num_conocimiento_embarque' => $registro['num_conocimiento_embarque'],
         'num_registro_buque_vuelo_contenedor' => $registro['num_registro_buque_vuelo_contenedor'],
         'dimension_sellos_candados' => $registro['dimension_tipo_sellos_candados'],
@@ -138,6 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'remitente_id' => $remitente_id,
                 'numero_pedimento' => $formData['numero_pedimento'] ?? null,
                 'fraccion_arancelaria' => $formData['fraccion_arancelaria'] ?? null,
+                'regimen' => $formData['regimen'] ?? null, // Nuevo campo
+                'patente' => $formData['patente'] ?? null,   // Nuevo campo
+                'piezas' => $formData['piezas'] ?? null,     // Nuevo campo
             ];
 
             $updateResult = $bitacoraModel->updateRegistro($updateData);

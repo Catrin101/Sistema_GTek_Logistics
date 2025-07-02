@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Nuevas validaciones
-    if (empty($formData['tipo_operacion'])) $errors[] = "El Tipo de Operación es obligatorio.";
+    //if (empty($formData['tipo_operacion'])) $errors[] = "El Tipo de Operación es obligatorio.";
     if (!empty($formData['patente']) && !filter_var($formData['patente'], FILTER_VALIDATE_INT)) {
         $errors[] = "La Patente debe ser un número entero válido.";
     }
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 3. Crear Registro de Bitácora
             $registroData = [
                 'fecha_ingreso' => $formData['fecha_ingreso'],
-                'tipo_operacion' => $formData['tipo_operacion'], // Ahora se toma del formulario
+                'tipo_operacion' => 'Entrada', // Por ahora, es solo de entrada
                 'num_conocimiento_embarque' => $formData['num_conocimiento_embarque'],
                 'num_registro_buque_vuelo_contenedor' => $formData['num_registro_buque_vuelo_contenedor'],
                 'dimension_tipo_sellos_candados' => $formData['dimension_sellos_candados'] ?? null,
