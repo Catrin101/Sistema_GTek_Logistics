@@ -430,21 +430,6 @@ include __DIR__ . '/src/views/header.php';
         </div>
     </div>
 
-    <div class="filters-container">
-        <form action="" method="GET">
-            <div class="search-container">
-                <input type="text" id="search" name="search" class="search-input" 
-                       placeholder="Search by driver, license plates, company..." 
-                       value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
-            </div>
-            
-            <div class="filter-actions">
-                <button type="submit" class="btn-search">Search</button>
-                <a href="/vehiculos.php" class="btn-clear-filters">Clear Filters</a>
-            </div>
-        </form>
-    </div>
-
     <div class="table-container">
         <div class="table-header">
             <span class="records-count"><?php echo $totalRecords; ?> vehicles found</span>

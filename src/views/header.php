@@ -11,7 +11,7 @@
     <div class="main-container">
         <header class="app-header">
             <div class="logo">
-                <img src="/assets/img/gtek_logo.png" alt="Gtek Logistics Logo">
+                <img src="/assets/img/GtekLogisic_logo.png" alt="Gtek Logistics Logo">
                 <h1>Gtek Logistics</h1>
             </div>
             <div class="user-info">

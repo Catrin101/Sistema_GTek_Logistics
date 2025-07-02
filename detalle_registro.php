@@ -406,7 +406,7 @@ body {
                         <div class="detail-value"><?php echo htmlspecialchars($registro['dimension_tipo_sellos_candados'] ?? '40\' HC'); ?></div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Fecha de Conclusión de Descarga</div>
+                        <div class="detail-label">Fecha de Salida</div>
                         <div class="detail-value"><?php echo !empty($registro['fecha_conclusion_descarga']) ? htmlspecialchars(date('d/m/Y H:i:s', strtotime($registro['fecha_conclusion_descarga']))) : 'N/A'; ?></div>
                     </div>
                     <div class="detail-item">

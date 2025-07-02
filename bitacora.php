@@ -23,8 +23,8 @@ $filters = [];
 if (!empty($_GET['fecha_inicio'])) {
     $filters['fecha_inicio'] = $_GET['fecha_inicio'];
 }
-if (!empty($_GET['fecha_fin'])) {
-    $filters['fecha_fin'] = $_GET['fecha_fin'];
+if (!empty($_GET['fecha_conclusion_descarga'])) {
+    $filters['fecha_conclusion_descarga'] = $_GET['fecha_conclusion_descarga'];
 }
 if (!empty($_GET['tipo_operacion'])) {
     $filters['tipo_operacion'] = $_GET['tipo_operacion'];
@@ -490,7 +490,7 @@ include __DIR__ . '/src/views/header.php';
             <?php if (!empty($filters)): ?>
                 <br>Filters applied: 
                 <?php if (!empty($filters['fecha_inicio'])): ?>Start: <?php echo $filters['fecha_inicio']; ?><?php endif; ?>
-                <?php if (!empty($filters['fecha_fin'])): ?> | End: <?php echo $filters['fecha_fin']; ?><?php endif; ?>
+                <?php if (!empty($filters['fecha_conclusion_descarga'])): ?> | End: <?php echo $filters['fecha_conclusion_descarga']; ?><?php endif; ?>
                 <?php if (!empty($filters['tipo_operacion'])): ?> | Type: <?php echo $filters['tipo_operacion']; ?><?php endif; ?>
                 <?php if (!empty($filters['search_query'])): ?> | Search: "<?php echo htmlspecialchars($filters['search_query']); ?>"<?php endif; ?>
             <?php endif; ?>
@@ -508,9 +508,9 @@ include __DIR__ . '/src/views/header.php';
                 </div>
                 
                 <div class="filter-group">
-                    <label class="filter-label" for="fecha_fin">End Date</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" class="filter-input" 
-                           value="<?php echo htmlspecialchars($filters['fecha_fin'] ?? ''); ?>" 
+                    <label class="filter-label" for="fecha_conclusion_descarga">End Date</label>
+                    <input type="date" id="fecha_conclusion_descarga" name="fecha_conclusion_descarga" class="filter-input" 
+                           value="<?php echo htmlspecialchars($filters['fecha_conclusion_descarga'] ?? ''); ?>" 
                            placeholder="Select end date">
                 </div>
                 
@@ -522,12 +522,6 @@ include __DIR__ . '/src/views/header.php';
                         <option value="Salida" <?php echo ((($filters['tipo_operacion'] ?? '') === 'Salida') ? 'selected' : ''); ?>>Exit</option>
                     </select>
                 </div>
-            </div>
-            
-            <div class="search-container">
-                <input type="text" id="search" name="search" class="search-input" 
-                       placeholder="Search by document, merchandise, consignee..." 
-                       value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
             </div>
             
             <div style="margin-top: 20px; display: flex; gap: 10px;">
@@ -579,7 +573,9 @@ include __DIR__ . '/src/views/header.php';
                 <?php else: ?>
                     <?php foreach ($registros as $registro): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($registro['fecha_ingreso']))); ?></td>
+                            <td>
+                                <?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($registro['fecha_ingreso']))); ?>
+                            </td>
                             <td><?php echo htmlspecialchars($registro['tipo_operacion']); ?></td>
                             <td><?php echo htmlspecialchars($registro['num_conocimiento_embarque']); ?></td>
                             <td><?php echo htmlspecialchars($registro['descripcion_mercancia'] . ', ' . $registro['peso_unidad_medida'] . 'KG, ' . $registro['num_bultos'] . ' bultos'); ?></td>

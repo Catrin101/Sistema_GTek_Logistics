@@ -466,6 +466,11 @@ body {
                            value="<?php echo htmlspecialchars($formData['fecha_ingreso'] ?? ''); ?>" required>
                 </div>
                 <div class="form-group">
+                    <label for="fecha_conclusion_descarga">Fecha de Conclusión de Descarga</label>
+                    <input type="datetime-local" id="fecha_conclusion_descarga" name="fecha_conclusion_descarga" 
+                           value="<?php echo htmlspecialchars($formData['fecha_conclusion_descarga'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
                     <label for="tipo_operacion">Tipo de Operación *</label>
                     <select id="tipo_operacion" name="tipo_operacion" required>
                         <option value="">Seleccione...</option>
@@ -549,11 +554,6 @@ body {
                     <input type="number" step="0.01" id="valor_comercial" name="valor_comercial" 
                            placeholder="50000.00" 
                            value="<?php echo htmlspecialchars($formData['valor_comercial'] ?? ''); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="fecha_conclusion_descarga">Fecha de Conclusión de Descarga</label>
-                    <input type="datetime-local" id="fecha_conclusion_descarga" name="fecha_conclusion_descarga" 
-                           value="<?php echo htmlspecialchars($formData['fecha_conclusion_descarga'] ?? ''); ?>">
                 </div>
             </div>
 
