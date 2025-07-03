@@ -21,7 +21,7 @@ $current_image_path = null; // Para guardar la ruta de la imagen actual
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $visitante_id = (int)$_GET['id'];
     $visitante = $visitanteModel->getVisitanteById($visitante_id);
-
+    
     if (!$visitante) {
         // Visitante no encontrado, redirigir o mostrar error
         header('Location: /visitantes.php?status=error&message=Visitante no encontrado.');
@@ -30,7 +30,17 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
     // Pre-llenar el formulario con los datos del visitante
     $formData = $visitante;
-    $current_image_path = $visitante['ruta_imagen'];
+    $current_image_path = $visitante['ruta_imagen'] ?? null; // Asegurar que es null si no existe
+
+    // Formatear fechas para los campos datetime-local
+    if (isset($formData['fecha_entrada'])) {
+        $formData['fecha_entrada'] = date('Y-m-d\TH:i', strtotime($formData['fecha_entrada']));
+    }
+    if (isset($formData['fecha_salida']) && $formData['fecha_salida']) {
+        $formData['fecha_salida'] = date('Y-m-d\TH:i', strtotime($formData['fecha_salida']));
+    } else {
+        $formData['fecha_salida'] = ''; // Asegurar que sea vacío si es NULL en DB
+    }
 
 } else {
     // ID no proporcionado o inválido, redirigir
@@ -44,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recolectar y sanear datos
     $formData['nombre'] = trim($_POST['nombre'] ?? '');
     $formData['numero_verificacion'] = trim($_POST['numero_verificacion'] ?? '');
+    $formData['fecha_entrada'] = trim($_POST['fecha_entrada'] ?? ''); // AGREGAR ESTA LÍNEA
+    $formData['fecha_salida'] = trim($_POST['fecha_salida'] ?? '');
 
     // Validaciones
     if (empty($formData['nombre'])) {
@@ -102,7 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $visitanteData = [
             'nombre' => $formData['nombre'],
             'numero_verificacion' => $formData['numero_verificacion'],
-            'ruta_imagen' => $new_image_path // Usar la nueva ruta o null
+            'ruta_imagen' => $new_image_path, // Usar la nueva ruta o null
+            'fecha_entrada' => !empty($formData['fecha_entrada']) ? $formData['fecha_entrada'] : null, // AGREGAR ESTA LÍNEA
+            'fecha_salida' => !empty($formData['fecha_salida']) ? $formData['fecha_salida'] : null,   // AGREGAR ESTA LÍNEA
         ];
 
         $updated = $visitanteModel->updateVisitante($visitante_id, $visitanteData);
@@ -504,6 +518,16 @@ body {
                     <input type="text" id="numero_verificacion" name="numero_verificacion" 
                            placeholder="Número de identificación o verificación"
                            value="<?php echo htmlspecialchars($formData['numero_verificacion'] ?? ''); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="fecha_entrada">Fecha de Entrada</label>
+                    <input type="datetime-local" id="fecha_entrada" name="fecha_entrada"
+                           value="<?php echo htmlspecialchars($formData['fecha_entrada'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_salida">Fecha de Salida</label>
+                    <input type="datetime-local" id="fecha_salida" name="fecha_salida"
+                           value="<?php echo htmlspecialchars($formData['fecha_salida'] ?? ''); ?>">
                 </div>
             </div>
 

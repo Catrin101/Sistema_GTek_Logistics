@@ -21,23 +21,27 @@ class Visitante {
     public function createVisitante(array $data) {
         $sql = "INSERT INTO visitantes (
                     nombre,
-                    numero_verificacion
+                    numero_verificacion,
+                    fecha_entrada,        
+                    fecha_salida          
                 ) VALUES (
                     :nombre,
-                    :numero_verificacion
+                    :numero_verificacion,
+                    :fecha_entrada,       
+                    :fecha_salida
                 )";
 
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':nombre', $data['nombre']);
             $stmt->bindParam(':numero_verificacion', $data['numero_verificacion']);
+            $stmt->bindParam(':fecha_entrada', $data['fecha_entrada']); // AGREGAR ESTA LÍNEA
+            $stmt->bindParam(':fecha_salida', $data['fecha_salida']);   // AGREGAR ESTA LÍNEA
 
             $stmt->execute();
             return $this->pdo->lastInsertId();
         } catch (PDOException $e) {
             error_log("Error al crear visitante: " . $e->getMessage());
-            // En un entorno de desarrollo, podrías querer re-lanzar o mostrar el error para depuración
-            // throw new Exception("Error al crear visitante: " . $e->getMessage());
             return false;
         }
     }
@@ -54,7 +58,9 @@ class Visitante {
                     v.id,
                     v.nombre,
                     v.numero_verificacion,
-                    v.fecha_creacion
+                    v.fecha_creacion,
+                    v.fecha_entrada,
+                    v.fecha_salida 
                 FROM
                     visitantes v
                 WHERE 1=1";
@@ -155,12 +161,16 @@ class Visitante {
     public function updateVisitante(int $id, array $data) {
         $sql = "UPDATE visitantes SET
                     nombre = :nombre,
-                    numero_verificacion = :numero_verificacion
+                    numero_verificacion = :numero_verificacion,
+                    fecha_entrada = :fecha_entrada,
+                    fecha_salida = :fecha_salida 
                 WHERE id = :id";
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':nombre', $data['nombre']);
             $stmt->bindParam(':numero_verificacion', $data['numero_verificacion']);
+            $stmt->bindParam(':fecha_entrada', $data['fecha_entrada']); // AGREGAR ESTA LÍNEA
+        $stmt->bindParam(':fecha_salida', $data['fecha_salida']); 
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {

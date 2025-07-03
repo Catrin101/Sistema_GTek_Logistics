@@ -24,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($formData['nombre'])) {
         $errors[] = "El nombre del visitante es obligatorio.";
     }
+    if (empty($formData['fecha_entrada'])) {
+         $errors[] = "La fecha de entrada es obligatoria.";
+    }
 
     // Si no hay errores de validación, proceder a guardar
     if (empty($errors)) {
@@ -31,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = [
                 'nombre' => trim($formData['nombre']),
                 'numero_verificacion' => !empty($formData['numero_verificacion']) ? trim($formData['numero_verificacion']) : null,
+                'fecha_entrada' => !empty($formData['fecha_entrada']) ? $formData['fecha_entrada'] : date('Y-m-d H:i:s'), // AGREGAR ESTA LÍNEA
+                'fecha_salida' => !empty($formData['fecha_salida']) ? $formData['fecha_salida'] : null,   // AGREGAR ESTA LÍNEA
             ];
 
             $visitante_id = $visitanteModel->createVisitante($data);
@@ -396,6 +401,16 @@ body {
                     <input type="text" id="numero_verificacion" name="numero_verificacion" 
                            placeholder="Número de identificación (opcional)"
                            value="<?php echo htmlspecialchars($formData['numero_verificacion'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_entrada">Fecha de Entrada</label>
+                    <input type="datetime-local" id="fecha_entrada" name="fecha_entrada"
+                           value="<?php echo htmlspecialchars(isset($formData['fecha_entrada']) ? date('Y-m-d\TH:i', strtotime($formData['fecha_entrada'])) : date('Y-m-d\TH:i')); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_salida">Fecha de Salida</label>
+                    <input type="datetime-local" id="fecha_salida" name="fecha_salida"
+                           value="<?php echo htmlspecialchars(isset($formData['fecha_salida']) && $formData['fecha_salida'] ? date('Y-m-d\TH:i', strtotime($formData['fecha_salida'])) : ''); ?>">
                 </div>
             </div>
 
