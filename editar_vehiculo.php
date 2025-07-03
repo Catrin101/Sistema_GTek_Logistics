@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'placas' => trim(strtoupper($formData['placas'])),
                 'empresa' => !empty(trim($formData['empresa'])) ? trim($formData['empresa']) : null,
                 'modelo' => !empty(trim($formData['modelo'])) ? trim($formData['modelo']) : null,
+                'fecha_salida' => !empty(trim($formData['fecha_salida'])) ? trim($formData['fecha_salida']) : null,
                 'usuario_del_sistema_id' => $vehiculo['usuario_del_sistema_id'] // Mantener el usuario original
             ];
 
@@ -382,6 +383,11 @@ body {
                     <input type="text" id="modelo" name="modelo" 
                            placeholder="EJ: Freightliner Cascadia 2020"
                            value="<?php echo htmlspecialchars($formData['modelo'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_salida">Fecha de Salida</label>
+                    <input type="datetime-local" id="fecha_salida" name="fecha_salida"
+                           value="<?php echo htmlspecialchars($formData['fecha_salida'] ? date('Y-m-d\TH:i', strtotime($formData['fecha_salida'])) : ''); ?>">
                 </div>
             </div>
 

@@ -486,6 +486,7 @@ include __DIR__ . '/src/views/header.php';
                     <th>Type</th>
                     <th>Registered by</th>
                     <th>Registration Date</th>
+                    <th>Fecha de Salida</th>
                     <?php if ($isAdmin): // Mostrar columna de acciones solo si es admin ?>
                     <th class="no-print">Actions</th>
                     <?php endif; ?>
@@ -507,6 +508,7 @@ include __DIR__ . '/src/views/header.php';
                             <td><span class="type-badge">Entrada</span></td>
                             <td><?php echo htmlspecialchars($vehiculo['usuario_del_sistema_username'] ?? 'Unknown User'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
+                            <td><?php echo htmlspecialchars($vehiculo['fecha_salida'] ? date('d/m/Y H:i', strtotime($vehiculo['fecha_salida'])) : 'N/A'); ?></td>
                             <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
                             <td class="no-print">
                                 <div class="actions-container">

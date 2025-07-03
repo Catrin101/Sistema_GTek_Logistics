@@ -24,13 +24,15 @@ class Vehiculo {
                     usuario_del_sistema_id,
                     placas,
                     empresa,
-                    modelo
+                    modelo,
+                    fecha_salida
                 ) VALUES (
                     :nombre_conductor,
                     :usuario_del_sistema_id,
                     :placas,
                     :empresa,
-                    :modelo
+                    :modelo,
+                    :fecha_salida
                 )";
 
         try {
@@ -40,6 +42,7 @@ class Vehiculo {
             $stmt->bindParam(':placas', $data['placas']);
             $stmt->bindParam(':empresa', $data['empresa']);
             $stmt->bindParam(':modelo', $data['modelo']);
+            $stmt->bindParam(':fecha_salida', $data['fecha_salida']);
 
             $stmt->execute();
             return $this->pdo->lastInsertId();
@@ -66,7 +69,8 @@ class Vehiculo {
                     v.placas,
                     v.empresa,
                     v.modelo,
-                    v.fecha_creacion
+                    v.fecha_creacion,
+                    v.fecha_salida
                 FROM
                     vehiculos v
                 LEFT JOIN -- Usamos LEFT JOIN porque usuario_del_sistema_id podría ser NULL
@@ -182,7 +186,8 @@ class Vehiculo {
                     usuario_del_sistema_id = :usuario_del_sistema_id,
                     placas = :placas,
                     empresa = :empresa,
-                    modelo = :modelo
+                    modelo = :modelo,
+                    fecha_salida = :fecha_salida
                 WHERE id = :id";
         try {
             $stmt = $this->pdo->prepare($sql);
@@ -191,6 +196,7 @@ class Vehiculo {
             $stmt->bindParam(':placas', $data['placas']);
             $stmt->bindParam(':empresa', $data['empresa']);
             $stmt->bindParam(':modelo', $data['modelo']);
+            $stmt->bindParam(':fecha_salida', $data['fecha_salida']);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
