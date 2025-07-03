@@ -12,7 +12,7 @@
         <header class="app-header">
             <div class="logo">
                 <img src="/assets/img/GtekLogisic_logo.png" alt="Gtek Logistics Logo">
-                <h1>Gtek Logistics</h1>
+                <h1>REGISTRO ENTRADAS Y SALIDAS</h1>
             </div>
             <div class="user-info">
                 <?php

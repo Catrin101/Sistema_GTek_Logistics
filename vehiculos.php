@@ -304,6 +304,18 @@ include __DIR__ . '/src/views/header.php';
     align-items: center; /* Alineación vertical */
 }
 
+/* Estilo para la columna Type */
+.type-badge {
+    background-color: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+}
+
 /* === ESTILOS PARA IMPRESIÓN === */
 @media print {
     /* Ocultar elementos que no deben aparecer en el PDF */
@@ -377,6 +389,15 @@ include __DIR__ . '/src/views/header.php';
         border: 1px solid #333;
         padding: 8px;
         color: #000 !important;
+    }
+    
+    /* Estilo para type-badge en impresión */
+    .type-badge {
+        background-color: #f0f0f0 !important;
+        color: #000 !important;
+        border: 1px solid #333;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
     
     /* Información adicional en el pie de página */
@@ -462,6 +483,7 @@ include __DIR__ . '/src/views/header.php';
                     <th>License Plates</th>
                     <th>Company</th>
                     <th>Model</th>
+                    <th>Type</th>
                     <th>Registered by</th>
                     <th>Registration Date</th>
                     <?php if ($isAdmin): // Mostrar columna de acciones solo si es admin ?>
@@ -472,7 +494,7 @@ include __DIR__ . '/src/views/header.php';
             <tbody>
                 <?php if (empty($vehiculos)): ?>
                     <tr>
-                        <td colspan="<?php echo ($isAdmin ? '8' : '7'); ?>" class="no-records">No vehicles found matching the search criteria</td>
+                        <td colspan="<?php echo ($isAdmin ? '9' : '8'); ?>" class="no-records">No vehicles found matching the search criteria</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($vehiculos as $vehiculo): ?>
@@ -482,6 +504,7 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($vehiculo['placas']); ?></td>
                             <td><?php echo htmlspecialchars($vehiculo['empresa'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($vehiculo['modelo'] ?? 'N/A'); ?></td>
+                            <td><span class="type-badge">Entrada</span></td>
                             <td><?php echo htmlspecialchars($vehiculo['usuario_del_sistema_username'] ?? 'Unknown User'); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($vehiculo['fecha_creacion']))); ?></td>
                             <?php if ($isAdmin): // Mostrar botón de eliminar solo si es admin ?>
@@ -515,7 +538,6 @@ include __DIR__ . '/src/views/header.php';
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
-        </div>
         <?php endif; ?>
     </div>
 </div>

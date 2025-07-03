@@ -455,6 +455,7 @@ include __DIR__ . '/src/views/header.php';
                     <th>Name</th>
                     <th>Verification Number</th>
                     <th>Registration Date</th>
+                    <th>Output Date</th>
                     <th class="no-print">Image</th>
                     <?php if ($isAdmin): ?>
                     <th class="no-print">Actions</th>
@@ -472,6 +473,7 @@ include __DIR__ . '/src/views/header.php';
                             <td><?php echo htmlspecialchars($visitante['id']); ?></td>
                             <td><?php echo htmlspecialchars($visitante['nombre']); ?></td>
                             <td><?php echo htmlspecialchars($visitante['numero_verificacion'] ?? 'N/A'); ?></td>
+                            <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i A', strtotime($visitante['fecha_creacion']))); ?></td>
                             <td class="no-print">Image not found</td>
                             <?php if ($isAdmin): ?>

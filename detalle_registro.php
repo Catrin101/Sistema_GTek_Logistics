@@ -430,7 +430,7 @@ body {
                         <div class="detail-value"><?php echo htmlspecialchars($registro['num_bultos']); ?> bultos</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Número de Registro de Buque</div>
+                        <div class="detail-label">Número de Registro (Contenedor)</div>
                         <div class="detail-value"><?php echo htmlspecialchars($registro['num_registro_buque_vuelo_contenedor']); ?></div>
                     </div>
                     <div class="detail-item">

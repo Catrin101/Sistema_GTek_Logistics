@@ -523,7 +523,12 @@ include __DIR__ . '/src/views/header.php';
                     </select>
                 </div>
             </div>
-            
+            <div class="search-container">
+                <input type="text" id="search" name="search" class="search-input" 
+                       placeholder="Search by Numero de Registro" 
+                       value="<?php echo htmlspecialchars($filters['search_query'] ?? ''); ?>">
+            </div>
+
             <div style="margin-top: 20px; display: flex; gap: 10px;">
                 <button type="submit" class="btn-export">Apply Filters</button>
                 <a href="/bitacora.php" class="btn-clear-filters">Clear Filters</a>
