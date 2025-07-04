@@ -22,12 +22,12 @@ class Visitante {
         $sql = "INSERT INTO visitantes (
                     nombre,
                     numero_verificacion,
-                    fecha_entrada,        
-                    fecha_salida          
+                    fecha_entrada,
+                    fecha_salida
                 ) VALUES (
                     :nombre,
                     :numero_verificacion,
-                    :fecha_entrada,       
+                    :fecha_entrada,
                     :fecha_salida
                 )";
 
@@ -35,8 +35,8 @@ class Visitante {
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':nombre', $data['nombre']);
             $stmt->bindParam(':numero_verificacion', $data['numero_verificacion']);
-            $stmt->bindParam(':fecha_entrada', $data['fecha_entrada']); // AGREGAR ESTA LÍNEA
-            $stmt->bindParam(':fecha_salida', $data['fecha_salida']);   // AGREGAR ESTA LÍNEA
+            $stmt->bindParam(':fecha_entrada', $data['fecha_entrada']);
+            $stmt->bindParam(':fecha_salida', $data['fecha_salida']);
 
             $stmt->execute();
             return $this->pdo->lastInsertId();
@@ -163,14 +163,16 @@ class Visitante {
                     nombre = :nombre,
                     numero_verificacion = :numero_verificacion,
                     fecha_entrada = :fecha_entrada,
-                    fecha_salida = :fecha_salida 
+                    fecha_salida = :fecha_salida,
+                    ruta_imagen = :ruta_imagen
                 WHERE id = :id";
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':nombre', $data['nombre']);
             $stmt->bindParam(':numero_verificacion', $data['numero_verificacion']);
-            $stmt->bindParam(':fecha_entrada', $data['fecha_entrada']); // AGREGAR ESTA LÍNEA
-        $stmt->bindParam(':fecha_salida', $data['fecha_salida']); 
+            $stmt->bindParam(':fecha_entrada', $data['fecha_entrada']);
+            $stmt->bindParam(':fecha_salida', $data['fecha_salida']);
+            $stmt->bindParam(':ruta_imagen', $data['ruta_imagen']);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
